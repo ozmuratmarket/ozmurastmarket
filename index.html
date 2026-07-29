@@ -2,13 +2,10 @@
 <html lang="tr">
 <head>
     <title>Öz Murat Market | Samsun Online Market ve Manav</title>
-    <meta name="description" content="Samsun'da taze sebze, meyve, gıda, oyuncak ve market ürünleri Öz Murat Market'te. Hemen sipariş verin." />
+    <meta name="description" content="Samsun'da taze sebze, meyve, gıda, oyuncak, kırtasiye, züccaciye ve market ürünleri Öz Murat Market'te. Hemen sipariş verin." />
     <meta name="google-site-verification" content="MwrKCxvlgsrnT0boGqCRg4A9Eujd9E4l5ZNsMy7bYTQ" />
-    <title>Öz Murat Market | Samsun İlkadım Online Market ve Manav</title>
-    <meta name="description" content="Samsun İlkadım'da taze meyve, sebze, süt ürünleri ve temel gıda alışverişi. Hızlı ve güvenilir market teslimatı." />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Öz Murat Market | Online Market & Manav</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -160,7 +157,7 @@
                     <span id="cartTotal" class="text-green-600">0.00 TL</span>
                 </div>
                 <div class="text-xs text-amber-600 font-semibold mb-4">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Minimum sipariş tutarı 500.00 TL'dir[cite: 2].
+                    <i class="fa-solid fa-circle-info mr-1"></i> Minimum sipariş tutarı 500.00 TL'dir.
                 </div>
 
                 <div class="space-y-2 mb-4">
@@ -275,7 +272,9 @@
             "Temizlik ve Deterjan": ["Çamaşır ve Bulaşık Deterjanları", "Yüzey Temizleyiciler, Çamaşır Suları", "Sıvı Sabunlar ve Bulaşık Telleri"],
             "Kağıt, Kozmetik ve Kişisel Bakım": ["Tuvalet Kağıdı, Kağıt Havlu, Peçete", "Şampuan, Duş Jeli, Sabun", "Diş Macunu, Diş Fırçası", "Bebek Bezi ve Islak Mendil"],
             "Elektronik": ["Küçük Ev Aletleri", "Kablolar & Şarj Aletleri"],
-            "Oyuncaklar": ["Eğitici & Akıl Oyunları", "Araba & Figür Oyuncaklar", "Bebek & Oyuncak Evler", "Kutu Oyunları & Yapboz"]
+            "Oyuncaklar": ["Eğitici & Akıl Oyunları", "Araba & Figür Oyuncaklar", "Bebek & Oyuncak Evler", "Kutu Oyunları & Yapboz"],
+            "Kırtasiye": ["Okul ve Ofis Malzemeleri", "Defter ve Kağıt Ürünleri", "Kalem ve Boya Çeşitleri", "Çanta ve Matara"],
+            "Züccaciye ve Mutfak": ["Mutfak Gereçleri ve Tencere", "Tabak, Bardak ve Sofra", "Saklama Kapları", "Ev Dekorasyon ve Düzenleyiciler"]
         };
 
         let allProducts = [];
@@ -442,7 +441,6 @@
 
             if(!phone || !newPassword) return showToast("Lütfen telefon numaranızı ve yeni şifrenizi giriniz.", "warning");
 
-            // Önce bu telefonla kayıtlı kullanıcı olup olmadığını kontrol edelim
             const { data: userCheck, error: checkError } = await db.from('customers')
                 .select('id')
                 .eq('phone', phone)
@@ -452,7 +450,6 @@
                 return showToast("Bu telefon numarasına kayıtlı bir üyelik bulunamadı!", "error");
             }
 
-            // Şifreyi güncelle
             const { error: updateError } = await db.from('customers')
                 .update({ password: newPassword })
                 .eq('phone', phone);
