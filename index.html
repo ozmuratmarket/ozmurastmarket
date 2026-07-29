@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta name="google-site-verification" content="flr_BQOhey4AEXMlf8E2iEN1Agibxzsll2r63X6A2gM" />
+    <title>Öz Murat Market | Samsun İlkadım Online Market ve Manav</title>
+    <meta name="description" content="Samsun İlkadım'da taze meyve, sebze, süt ürünleri ve temel gıda alışverişi. Hızlı ve güvenilir     market teslimatı." />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öz Murat Market | Online Market & Manav</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 font-sans flex flex-col min-h-screen">
+
+    <!-- BİLDİRİM (TOAST) KONTEYNERİ -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2"></div>
+
+    <!-- ÇEREZ BİLDİRİM BANNER'I -->
+    <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-[110] shadow-lg hidden flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+        <div>
+            <i class="fa-solid fa-cookie-bite text-amber-400 mr-2"></i> 
+            Web sitemizde, deneyiminizi geliştirmek ve yasal mevzuata uygunluk sağlamak amacıyla çerezler kullanılmaktadır. Detaylı bilgi için <a href="#" onclick="openLegalModal('cookie')" class="underline text-green-400">Çerez Politikamızı</a> inceleyebilirsiniz.
+        </div>
+        <button onclick="acceptCookies()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold whitespace-nowrap">Kabul Et</button>
+    </div>
+
+    <!-- ÜST BİLGİ -->
+    <div class="bg-green-700 text-white text-sm py-2 px-4">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div>
+                <i class="fa-solid fa-phone mr-2"></i> Sipariş Hattı: <strong>(0362) 236 36 10</strong>
+                <span class="mx-3 hidden sm:inline">|</span>
+                <span class="block sm:inline"><i class="fa-solid fa-clock mr-2"></i> Çalışma Saatleri: 08:00 - 22:00</span>
+            </div>
+            <div>
+                <i class="fa-solid fa-location-dot mr-2"></i> Kışla, Kokulu Sk. No:28, İlkadım/Samsun
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-4">
+            <a href="#" onclick="filterMainCategory('Tümü')" class="text-2xl font-bold text-green-600 flex items-center gap-2">
+                <i class="fa-solid fa-basket-shopping text-3xl"></i> Öz Murat Market
+            </a>
+
+            <div class="hidden md:flex flex-1 max-w-md mx-4">
+                <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Ürün veya kategori ara..." class="w-full border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:border-green-500">
+                <button class="bg-green-600 text-white px-4 py-2 rounded-r-lg hover:bg-green-700">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div id="userAuthArea">
+                    <button onclick="openAuthModal('login')" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
+                        <i class="fa-solid fa-user mr-1"></i> Giriş Yap / Üye Ol
+                    </button>
+                </div>
+
+                <button onclick="toggleCart()" class="relative bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-green-200 transition">
+                    <i class="fa-solid fa-cart-shopping text-lg"></i>
+                    <span class="hidden sm:inline">Sepetim</span>
+                    <span id="cartCount" class="bg-green-600 text-white text-xs px-2 py-1 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- KATEGORİ ALANLARI -->
+    <section class="bg-white border-b sticky top-[73px] z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto" id="mainCategoryButtons"></div>
+    </section>
+
+    <section id="subCategorySection" class="bg-gray-50 border-b hidden">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto" id="subCategoryButtons"></div>
+    </section>
+
+    <!-- İÇERİK BÖLÜMÜ -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            
+            <aside class="lg:col-span-1">
+                <div class="bg-gradient-to-br from-green-800 to-green-600 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden text-center border-2 border-green-500/30">
+                    <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl font-extrabold select-none">1989</div>
+                    <div class="w-20 h-20 mx-auto mb-4 bg-amber-400 text-green-900 rounded-full flex items-center justify-center shadow-md border-4 border-white/20">
+                        <i class="fa-solid fa-award text-4xl"></i>
+                    </div>
+                    <span class="text-xs font-bold tracking-widest text-amber-300 uppercase block mb-1">Geleneksel Lezzet & Güven</span>
+                    <h3 class="text-2xl font-black mb-2 leading-tight">1989'dan Beri<br>Hizmetinizdeyiz</h3>
+                    <div class="w-12 h-1 bg-amber-400 mx-auto my-3 rounded-full"></div>
+                    <p class="text-xs text-green-100 leading-relaxed font-medium">
+                        30 yılı aşkın tecrübemizle en taze meyve, sebze ve en kaliteli gıda ürünlerini kapınıza kadar getiriyoruz.
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-white/10 grid grid-cols-2 gap-2 text-[11px] text-green-100 font-semibold">
+                        <div class="flex items-center justify-center gap-1"><i class="fa-solid fa-apple-whole text-amber-300"></i> %100 Taze</div>
+                        <div class="flex items-center justify-center gap-1"><i class="fa-solid fa-truck-fast text-amber-300"></i> Hızlı Teslimat</div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="lg:col-span-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="currentCategoryTitle" class="text-2xl font-bold text-gray-800">Tüm Ürünler</h2>
+                    <span id="productCount" class="text-sm text-gray-500 font-semibold">Yükleniyor...</span>
+                </div>
+                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 gap-6"></div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- RESMİ YASAL FOOTER (KÜNYE) -->
+    <footer class="bg-gray-800 text-gray-300 text-xs py-8 px-4 mt-auto border-t border-gray-700">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <h4 class="font-bold text-white text-sm mb-2"><i class="fa-solid fa-basket-shopping text-green-500 mr-1"></i> Öz Murat Market</h4>
+                <p class="text-gray-400 leading-relaxed">1989'dan bugüne güvenilir mahalle bakkalı ve online market anlayışıyla Samsun İlkadım'da hizmet vermektedir.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-white text-sm mb-2">İşletme Künyesi & İletişim</h4>
+                <p><strong>Unvan:</strong> Öz Murat Market Gıda San. Tic.</p>
+                <p><strong>Adres:</strong> Kışla Mah. Kokulu Sk. No:28, İlkadım / Samsun</p>
+                <p><strong>Telefon:</strong> (0362) 236 36 10</p>
+                <p class="mt-1"><strong>MERSİS / V.D.:</strong> Vergi No: Esnaf Sicil Kayıtlıdır</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-white text-sm mb-2">Yasal Politikalar</h4>
+                <ul class="space-y-1">
+                    <li><a href="#" onclick="openLegalModal('kvkk')" class="hover:text-white underline">KVKK Aydınlatma Metni</a></li>
+                    <li><a href="#" onclick="openLegalModal('mesafeli')" class="hover:text-white underline">Mesafeli Satış Sözleşmesi</a></li>
+                    <li><a href="#" onclick="openLegalModal('onbilgilendirme')" class="hover:text-white underline">Ön Bilgilendirme Koşulları</a></li>
+                    <li><a href="#" onclick="openLegalModal('cookie')" class="hover:text-white underline">Çerez Politikası</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-gray-700 mt-6 pt-4 text-center text-gray-500 text-[11px]">
+            &copy; 2026 Öz Murat Market - Tüm Hakları Saklıdır. E-Ticaret altyapısı yasal mevzuata uygundur.
+        </div>
+    </footer>
+
+    <!-- SEPET MODAL -->
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-end">
+        <div class="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between overflow-y-auto">
+            <div>
+                <div class="flex justify-between items-center border-b pb-4 mb-4">
+                    <h3 class="text-xl font-bold text-gray-800"><i class="fa-solid fa-cart-shopping text-green-600 mr-2"></i> Alışveriş Sepetim</h3>
+                    <button onclick="toggleCart()" class="text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+                </div>
+                <div id="cartItems" class="space-y-4"></div>
+            </div>
+
+            <div class="border-t pt-4 mt-6">
+                <div class="flex justify-between text-lg font-bold mb-4">
+                    <span>Toplam Tutar:</span>
+                    <span id="cartTotal" class="text-green-600">0.00 TL</span>
+                </div>
+
+                <div class="space-y-2 mb-4">
+                    <input type="text" id="custName" placeholder="Adınız Soyadınız *" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500">
+                    <input type="tel" id="custPhone" placeholder="Telefon Numaranız (5XX...)" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500">
+                    <textarea id="custAddress" placeholder="Teslimat Adresiniz *" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500" rows="2"></textarea>
+                    <textarea id="orderNote" placeholder="Sipariş Notu (Örn: Zili çalmayın...)" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500 bg-amber-50/50 border-amber-200" rows="2"></textarea>
+                    
+                    <!-- YASAL ONAY KUTULARI (ZORUNLU) -->
+                    <div class="space-y-1.5 pt-2 text-xs text-gray-600">
+                        <label class="flex items-start gap-2 cursor-pointer">
+                            <input type="checkbox" id="chkKvkk" class="mt-0.5 rounded text-green-600 focus:ring-green-500">
+                            <span><a href="#" onclick="openLegalModal('kvkk'); return false;" class="text-green-700 underline font-semibold">KVKK Aydınlatma Metni</a>'ni okudum ve kişisel verilerimin işlenmesine onay veriyorum. *</span>
+                        </label>
+                        <label class="flex items-start gap-2 cursor-pointer">
+                            <input type="checkbox" id="chkContract" class="mt-0.5 rounded text-green-600 focus:ring-green-500">
+                            <span><a href="#" onclick="openLegalModal('mesafeli'); return false;" class="text-green-700 underline font-semibold">Mesafeli Satış Sözleşmesi</a>'ni ve Ön Bilgilendirme Koşulları'nı okudum, kabul ediyorum. *</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button id="orderBtn" onclick="submitOrderDirect()" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check text-xl"></i> Siparişi Tamamla & Gönder
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÜYELİK & GİRİŞ MODAL -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+            <button onclick="closeAuthModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+
+            <div id="loginFormArea">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-right-to-bracket text-green-600"></i> Müşteri Girişi</h3>
+                <div class="space-y-3">
+                    <input type="tel" id="loginPhone" placeholder="Telefon Numaranız" class="w-full border p-2 rounded text-sm">
+                    <input type="password" id="loginPass" placeholder="Şifreniz" class="w-full border p-2 rounded text-sm">
+                    <button onclick="loginCustomer()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700">Giriş Yap</button>
+                </div>
+                <p class="text-xs text-center text-gray-500 mt-4">Hesabınız yok mu? <a href="#" onclick="toggleAuthView('register')" class="text-green-600 font-bold underline">Hemen Üye Olun</a></p>
+            </div>
+
+            <div id="registerFormArea" class="hidden">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus text-green-600"></i> Yeni Üye Kaydı</h3>
+                <div class="space-y-3">
+                    <input type="text" id="regName" placeholder="Ad Soyad *" class="w-full border p-2 rounded text-sm">
+                    <input type="tel" id="regPhone" placeholder="Telefon Numarası (5XX...) *" class="w-full border p-2 rounded text-sm">
+                    <input type="email" id="regEmail" placeholder="E-posta Adresi (Opsiyonel)" class="w-full border p-2 rounded text-sm">
+                    <input type="password" id="regPass" placeholder="Şifre *" class="w-full border p-2 rounded text-sm">
+                    <textarea id="regAddress" placeholder="Varsayılan Teslimat Adresi" class="w-full border p-2 rounded text-sm" rows="2"></textarea>
+                    
+                    <label class="flex items-start gap-2 text-xs text-gray-600 pt-1">
+                        <input type="checkbox" id="regKvkk" class="mt-0.5 rounded text-green-600">
+                        <span><a href="#" onclick="openLegalModal('kvkk'); return false;" class="text-green-700 underline">KVKK Metni</a>'ni onaylıyorum. *</span>
+                    </label>
+
+                    <button onclick="registerCustomer()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700">Kayıt Ol</button>
+                </div>
+                <p class="text-xs text-center text-gray-500 mt-4">Zaten üye misiniz? <a href="#" onclick="toggleAuthView('login')" class="text-green-600 font-bold underline">Giriş Yapın</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÜŞTERİ SİPARİŞ GEÇMİŞİ MODAL -->
+    <div id="ordersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative max-h-[85vh] flex flex-col">
+            <button onclick="closeOrdersModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-green-600"></i> Sipariş Geçmişim</h3>
+            <div id="myOrdersList" class="overflow-y-auto flex-1 space-y-3 pr-2"></div>
+        </div>
+    </div>
+
+    <!-- YASAL METİNLER MODALI -->
+    <div id="legalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[120] flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-xl p-6 relative max-h-[85vh] flex flex-col">
+            <button onclick="closeLegalModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+            <h3 id="legalModalTitle" class="text-lg font-bold text-gray-800 mb-3 border-b pb-2"></h3>
+            <div id="legalModalContent" class="overflow-y-auto flex-1 text-xs text-gray-600 space-y-2 leading-relaxed pr-2"></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://rwcuvmbppwzzdpzlmchu.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_oyfiLWs7CZGgcoEhVwyDjQ_X-bXF1vF";
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const categoryData = {
+            "Meyve dan Sebze": ["Taze Meyveler", "Taze Sebzeler ve Yeşillikler"],
+            "Temel Gıda": ["Bakliyat", "Un, Şeker, Tuz, Sıvı Yağlar", "Makarna, Şehriye, Hazır Çorbalar", "Salça, Soslar ve Konserve Ürünler", "Baharatlar"],
+            "Süt ve Kahvaltılık": ["Süt, Yoğurt, Ayran", "Peynir Çeşitleri, Zeytin, Tereyağı", "Yumurta, Salam, Sosis, Sucuk"],
+            "Et, Tavuk ve Balık": ["Kırmızı Et", "Tavuk Eti", "Balık & Deniz Ürünleri"],
+            "Atıştırmalık ve Tatlı": ["Bisküvi, Çikolata, Gofret", "Cips, Kraker, Kuruyemiş", "Reçel, Bal, Krem Çikolata"],
+            "İçecekler": ["Su, Maden Suyu", "Meyve Suları, Gazlı İçecekler", "Çay, Kahve"],
+            "Temizlik ve Deterjan": ["Çamaşır ve Bulaşık Deterjanları", "Yüzey Temizleyiciler, Çamaşır Suları", "Sıvı Sabunlar ve Bulaşık Telleri"],
+            "Kağıt, Kozmetik ve Kişisel Bakım": ["Tuvalet Kağıdı, Kağıt Havlu, Peçete", "Şampuan, Duş Jeli, Sabun", "Diş Macunu, Diş Fırçası", "Bebek Bezi ve Islak Mendil"],
+            "Elektronik": ["Küçük Ev Aletleri", "Kablolar & Şarj Aletleri"],
+            "Oyuncaklar": ["Eğitici & Akıl Oyunları", "Araba & Figür Oyuncaklar", "Bebek & Oyuncak Evler", "Kutu Oyunları & Yapboz"]
+        };
+
+        let allProducts = [];
+        let cart = [];
+        let activeMainCategory = "Tümü";
+        let activeSubCategory = null;
+        let loggedInCustomer = null;
+
+        window.onload = async () => {
+            checkLoginSession();
+            checkCookieConsent();
+            renderMainCategories();
+            await fetchProducts();
+            updateCartUI();
+        };
+
+        function checkCookieConsent() {
+            if(!localStorage.getItem('ozmurat_cookie_accepted')) {
+                document.getElementById('cookieBanner').classList.remove('hidden');
+            }
+        }
+
+        function acceptCookies() {
+            localStorage.setItem('ozmurat_cookie_accepted', 'true');
+            document.getElementById('cookieBanner').classList.add('hidden');
+        }
+
+        function openLegalModal(type) {
+            const modal = document.getElementById('legalModal');
+            const titleEl = document.getElementById('legalModalTitle');
+            const contentEl = document.getElementById('legalModalContent');
+            modal.classList.remove('hidden');
+
+            if(type === 'kvkk') {
+                titleEl.innerText = "KVKK Aydınlatma Metni";
+                contentEl.innerHTML = `
+                    <p><strong>Veri Sorumlusu:</strong> Öz Murat Market (Samsun / İlkadım)</p>
+                    <p>6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, müşterilerimizin kimlik, iletişim, sipariş ve teslimat adres bilgileri; siparişlerin alınması, ödeme işlemlerinin gerçekleştirilmesi, ürün teslimatının yapılması ve müşteri memnuniyetinin sağlanması amacıyla işlenmektedir.</p>
+                    <p>Toplanan kişisel verileriniz yasal zorunluluklar haricinde üçüncü şahıslarla paylaşılmaz. Haklarınızla ilgili bilgi almak için bizimle iletişime geçebilirsiniz.</p>
+                `;
+            } else if(type === 'mesafeli') {
+                titleEl.innerText = "Mesafeli Satış Sözleşmesi";
+                contentEl.innerHTML = `
+                    <p><strong>MADDE 1 - TARAFLAR</strong><br>İş bu sözleşme Öz Murat Market (Satıcı) ile internet sitesi üzerinden sipariş veren Alıcı arasındadır.</p>
+                    <p><strong>MADDE 2 - KONU</strong><br>İş bu sözleşmenin konusu, Alıcı'nın satıcıya ait internet sitesinden elektronik ortamda siparişini yaptığı mal/hizmetin satışı ve teslimi ile ilgili olarak Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların hak ve yükümlülüklerinin saptanmasıdır.</p>
+                    <p><strong>MADDE 3 - TESLİMAT</strong><br>Teslimat, satıcının kuryesi ile alıcının belirttiği adrese yapılır. Çabuk bozulabilen gıda maddelerinde cayma hakkı sınırlamaları geçerlidir.</p>
+                `;
+            } else if(type === 'onbilgilendirme') {
+                titleEl.innerText = "Ön Bilgilendirme Koşulları";
+                contentEl.innerHTML = `
+                    <p>Alıcı, sipariş vermeden önce ürünlerin vergiler dahil toplam fiyatını, ödeme şeklini, teslimat masraflarını ve cayma hakkı koşullarını bu form ile okuyup bilgilendirildiğini kabul eder.</p>
+                `;
+            } else if(type === 'cookie') {
+                titleEl.innerText = "Çerez Politikası";
+                contentEl.innerHTML = `
+                    <p>Sitemizde oturum yönetimi, sepet takibi ve kullanıcı deneyiminin iyileştirilmesi amacıyla yerel depolama (localStorage) çerezleri kullanılmaktadır.</p>
+                `;
+            }
+        }
+
+        function closeLegalModal() {
+            document.getElementById('legalModal').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-green-600' : type === 'warning' ? 'bg-amber-500' : 'bg-red-600';
+            const icon = type === 'success' ? 'fa-circle-check' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-xmark';
+
+            toast.className = `${bgClass} text-white px-4 py-3 rounded-lg shadow-lg text-sm font-semibold flex items-center gap-2 transform transition-all duration-300 translate-x-full opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function checkLoginSession() {
+            const saved = localStorage.getItem('ozmurat_customer');
+            if(saved) {
+                loggedInCustomer = JSON.parse(saved);
+                renderUserUI();
+            }
+        }
+
+        function renderUserUI() {
+            const area = document.getElementById("userAuthArea");
+            if(loggedInCustomer) {
+                area.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <button onclick="openMyOrders()" class="bg-green-50 text-green-700 px-3 py-2 rounded-lg text-sm font-semibold border border-green-200 hover:bg-green-100 transition">
+                            <i class="fa-solid fa-box-open mr-1"></i> Siparişlerim
+                        </button>
+                        <span class="text-xs text-gray-600 font-bold hidden lg:inline">Merhaba, ${loggedInCustomer.full_name}</span>
+                        <button onclick="logoutCustomer()" class="text-red-500 hover:text-red-700 p-2 text-sm" title="Çıkış Yap">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                `;
+                document.getElementById("custName").value = loggedInCustomer.full_name || '';
+                document.getElementById("custPhone").value = loggedInCustomer.phone || '';
+                document.getElementById("custAddress").value = loggedInCustomer.address || '';
+            } else {
+                area.innerHTML = `
+                    <button onclick="openAuthModal('login')" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
+                        <i class="fa-solid fa-user mr-1"></i> Giriş Yap / Üye Ol
+                    </button>
+                `;
+            }
+        }
+
+        async function registerCustomer() {
+            const full_name = document.getElementById("regName").value.trim();
+            const phone = document.getElementById("regPhone").value.trim();
+            const email = document.getElementById("regEmail").value.trim();
+            const password = document.getElementById("regPass").value.trim();
+            const address = document.getElementById("regAddress").value.trim();
+            const kvkkChecked = document.getElementById("regKvkk").checked;
+
+            if(!full_name || !phone || !password) return showToast("Lütfen Ad, Telefon ve Şifre alanlarını doldurunuz.", "error");
+            if(!kvkkChecked) return showToast("Üye olmak için KVKK metnini onaylamalısınız.", "warning");
+
+            const { data, error } = await db.from('customers').insert([{
+                full_name, phone, email, password, address
+            }]).select();
+
+            if(error) {
+                if(error.message.includes("unique")) return showToast("Bu telefon numarası ile zaten kayıtlı bir hesap var!", "warning");
+                return showToast("Kayıt hatası: " + error.message, "error");
+            }
+
+            showToast("Üyeliğiniz başarıyla oluşturuldu!", "success");
+            toggleAuthView('login');
+        }
+
+        async function loginCustomer() {
+            const phone = document.getElementById("loginPhone").value.trim();
+            const password = document.getElementById("loginPass").value.trim();
+
+            if(!phone || !password) return showToast("Lütfen telefon numarası ve şifrenizi giriniz.", "warning");
+
+            const { data, error } = await db.from('customers')
+                .select('*')
+                .eq('phone', phone)
+                .eq('password', password)
+                .single();
+
+            if(error || !data) return showToast("Telefon numarası veya şifre hatalı!", "error");
+
+            loggedInCustomer = data;
+            localStorage.setItem('ozmurat_customer', JSON.stringify(data));
+            renderUserUI();
+            closeAuthModal();
+            showToast(`Hoş geldiniz, ${data.full_name}!`, "success");
+        }
+
+        function logoutCustomer() {
+            loggedInCustomer = null;
+            localStorage.removeItem('ozmurat_customer');
+            renderUserUI();
+            document.getElementById("custName").value = '';
+            document.getElementById("custPhone").value = '';
+            document.getElementById("custAddress").value = '';
+            showToast("Çıkış yapıldı.", "warning");
+        }
+
+        async function openMyOrders() {
+            if(!loggedInCustomer) return;
+            document.getElementById("ordersModal").classList.remove("hidden");
+            const container = document.getElementById("myOrdersList");
+            container.innerHTML = `<p class="text-center text-gray-500 py-4">Yükleniyor...</p>`;
+
+            const { data, error } = await db.from('orders')
+                .select('*')
+                .or(`customer_id.eq.${loggedInCustomer.id},customer_phone.eq.${loggedInCustomer.phone}`)
+                .order('id', { ascending: false });
+
+            if(error || !data || data.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-8">Henüz siparişiniz yok.</p>`;
+                return;
+            }
+
+            container.innerHTML = data.map(o => `
+                <div class="border rounded-lg p-4 bg-gray-50">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-gray-800">Sipariş #${o.id}</span>
+                        <span class="px-2 py-1 text-xs rounded-full font-bold ${
+                            o.status === 'Teslim Edildi' ? 'bg-green-100 text-green-700' :
+                            o.status === 'İptal Edildi' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-800'
+                        }">${o.status || 'Hazırlanıyor'}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mb-2">${new Date(o.created_at).toLocaleString('tr-TR')}</div>
+                    ${o.order_note ? `<div class="text-xs bg-amber-50 p-2 rounded mb-2 text-amber-900"><strong>Not:</strong> ${o.order_note}</div>` : ''}
+                    <div class="text-sm font-medium text-gray-700 border-t pt-2">
+                        ${(o.items || []).map(i => `${i.name} (${i.qty} ${i.unit})`).join(', ')}
+                    </div>
+                    <div class="text-right font-bold text-green-700 mt-2">${o.total_amount} TL</div>
+                </div>
+            `).join('');
+        }
+
+        function closeOrdersModal() { document.getElementById("ordersModal").classList.add("hidden"); }
+        function openAuthModal(view) { document.getElementById("authModal").classList.remove("hidden"); toggleAuthView(view); }
+        function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
+        function toggleAuthView(view) {
+            if(view === 'register') {
+                document.getElementById("loginFormArea").classList.add("hidden");
+                document.getElementById("registerFormArea").classList.remove("hidden");
+            } else {
+                document.getElementById("registerFormArea").classList.add("hidden");
+                document.getElementById("loginFormArea").classList.remove("hidden");
+            }
+        }
+
+        async function fetchProducts() {
+            const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
+            if (error) return;
+            allProducts = data || [];
+            filterMainCategory(activeMainCategory);
+        }
+
+        function renderMainCategories() {
+            const container = document.getElementById("mainCategoryButtons");
+            let html = `<button onclick="filterMainCategory('Tümü')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'Tümü' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-600 hover:text-white'} transition">Tümü</button>`;
+            Object.keys(categoryData).forEach(cat => {
+                const isActive = activeMainCategory === cat;
+                html += `<button onclick="filterMainCategory('${cat}')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${isActive ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-600 hover:text-white'} transition">${cat}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function filterMainCategory(cat) {
+            activeMainCategory = cat;
+            activeSubCategory = null;
+            renderMainCategories();
+
+            const subSection = document.getElementById("subCategorySection");
+            const subContainer = document.getElementById("subCategoryButtons");
+
+            if (cat === "Tümü" || !categoryData[cat]) {
+                subSection.classList.add("hidden");
+                document.getElementById("currentCategoryTitle").innerText = "Tüm Ürünler";
+                renderProducts(allProducts);
+            } else {
+                subSection.classList.remove("hidden");
+                document.getElementById("currentCategoryTitle").innerText = cat;
+                let subHtml = `<button onclick="filterSubCategory(null)" class="px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap ${activeSubCategory === null ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 border'} transition">Tüm ${cat}</button>`;
+                categoryData[cat].forEach(sub => {
+                    subHtml += `<button onclick="filterSubCategory('${sub}')" class="px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap ${activeSubCategory === sub ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 border'} transition">${sub}</button>`;
+                });
+                subContainer.innerHTML = subHtml;
+                renderProducts(allProducts.filter(p => p.main_category === cat));
+            }
+        }
+
+        function filterSubCategory(sub) {
+            activeSubCategory = sub;
+            filterMainCategory(activeMainCategory);
+            if(sub) {
+                document.getElementById("currentCategoryTitle").innerText = `${activeMainCategory} > ${sub}`;
+                renderProducts(allProducts.filter(p => p.main_category === activeMainCategory && p.sub_category === sub));
+            }
+        }
+
+        function renderProducts(items) {
+            const container = document.getElementById("productGrid");
+            document.getElementById("productCount").innerText = `${items.length} ürün bulundu`;
+
+            if(items.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-12">Ürün bulunamadı.</p>`;
+                return;
+            }
+
+            container.innerHTML = items.map(p => {
+                const isOutOfStock = p.stock <= 0;
+                const img = p.image_url || 'https://via.placeholder.com/300?text=Urun+Resmi';
+                return `
+                <div class="bg-white rounded-lg shadow-sm border p-4 flex flex-col justify-between hover:shadow-md transition relative">
+                    ${isOutOfStock ? `<span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold">Stokta Yok</span>` : ''}
+                    <img src="${img}" alt="${p.name}" class="w-full h-40 object-cover rounded-md mb-3 ${isOutOfStock ? 'opacity-50' : ''}">
+                    <div>
+                        <span class="text-[10px] bg-green-50 text-green-700 px-2 py-1 rounded font-semibold uppercase">${p.sub_category || p.main_category}</span>
+                        <h3 class="font-bold text-gray-800 text-base mt-2">${p.name}</h3>
+                        <p class="text-xl font-bold text-gray-900 mt-1">${p.price} TL <span class="text-xs text-gray-500 font-normal">/ ${p.unit}</span></p>
+                        <p class="text-xs text-gray-400 mt-1">Stok: ${p.stock} ${p.unit}</p>
+                    </div>
+                    <button onclick="addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''} class="mt-4 w-full ${isOutOfStock ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-2 rounded transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-plus"></i> ${isOutOfStock ? 'Stok Tükendi' : 'Sepete Ekle'}
+                    </button>
+                </div>
+            `}).join('');
+        }
+
+        function searchProducts() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query) || p.main_category.toLowerCase().includes(query)));
+        }
+
+        function addToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if(!product || product.stock <= 0) return;
+            const existItem = cart.find(item => item.id === productId);
+
+            if(existItem) {
+                if(existItem.qty < product.stock) existItem.qty += 1;
+                else return showToast("Stok sınırına ulaşıldı.", "warning");
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+            showToast(`${product.name} sepete eklendi.`, "success");
+        }
+
+        function updateCartQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            const product = allProducts.find(p => p.id === id);
+            if(item) {
+                if(change > 0 && item.qty >= product.stock) return showToast("Stok sınırına ulaşıldı.", "warning");
+                item.qty += change;
+                if(item.qty <= 0) cart = cart.filter(i => i.id !== id);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById("cartCount").innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+            const container = document.getElementById("cartItems");
+            const orderBtn = document.getElementById("orderBtn");
+
+            if(cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-6">Sepetiniz boş.</p>`;
+                orderBtn.disabled = true;
+                orderBtn.className = "w-full bg-gray-300 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed transition flex items-center justify-center gap-2";
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 text-sm">${item.name}</h4>
+                            <p class="text-xs text-gray-500">${item.price} TL x ${item.qty} ${item.unit}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCartQty(${item.id}, -1)" class="bg-gray-200 px-2 rounded text-sm">-</button>
+                            <span class="font-bold text-sm">${item.qty}</span>
+                            <button onclick="updateCartQty(${item.id}, 1)" class="bg-gray-200 px-2 rounded text-sm">+</button>
+                            <span class="font-bold text-sm ml-2">${(item.price * item.qty).toFixed(2)} TL</span>
+                        </div>
+                    </div>
+                `).join('');
+                orderBtn.disabled = false;
+                orderBtn.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2";
+            }
+            document.getElementById("cartTotal").innerText = `${cart.reduce((sum, item) => sum + (item.price * item.qty), 0).toFixed(2)} TL`;
+        }
+
+        function toggleCart() { document.getElementById("cartModal").classList.toggle("hidden"); }
+
+        async function submitOrderDirect() {
+            if(cart.length === 0) return showToast("Sepetiniz boş!", "warning");
+            
+            const name = document.getElementById("custName").value.trim();
+            const phone = document.getElementById("custPhone").value.trim();
+            const address = document.getElementById("custAddress").value.trim();
+            const order_note = document.getElementById("orderNote").value.trim();
+            const chkKvkk = document.getElementById("chkKvkk").checked;
+            const chkContract = document.getElementById("chkContract").checked;
+
+            if(!name || !address) return showToast("Lütfen Adınızı ve Adresinizi doldurunuz.", "warning");
+            if(!chkKvkk || !chkContract) return showToast("Siparişi tamamlamak için KVKK ve Mesafeli Satış Sözleşmesi'ni onaylamalısınız.", "error");
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const btn = document.getElementById("orderBtn");
+            btn.disabled = true;
+            btn.innerText = "Gönderiliyor...";
+
+            const { error } = await db.from('orders').insert([{
+                customer_id: loggedInCustomer ? loggedInCustomer.id : null,
+                customer_name: name,
+                customer_phone: phone,
+                customer_address: address,
+                order_note: order_note,
+                items: cart,
+                total_amount: total,
+                status: 'Hazırlanıyor'
+            }]);
+
+            if (error) {
+                showToast("Hata: " + error.message, "error");
+                btn.disabled = false;
+                btn.innerText = "Siparişi Tamamla & Gönder";
+                return;
+            }
+
+            cart = [];
+            document.getElementById("orderNote").value = "";
+            document.getElementById("chkKvkk").checked = false;
+            document.getElementById("chkContract").checked = false;
+            updateCartUI();
+            toggleCart();
+            btn.innerText = "Siparişi Tamamla & Gönder";
+            showToast("Siparişiniz başarıyla alındı!", "success");
+        }
+    </script>
+</body>
+</html>
