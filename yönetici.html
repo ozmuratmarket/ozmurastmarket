@@ -262,7 +262,7 @@
             "Et, Tavuk ve Balık": ["Kırmızı Et", "Tavuk Eti", "Balık & Deniz Ürünleri"],
             "Atıştırmalık ve Tatlı": ["Bisküvi, Çikolata, Gofret", "Cips, Kraker, Kuruyemiş", "Reçel, Bal, Krem Çikolata"],
             "İçecekler": ["Su, Maden Suyu", "Meyve Suları, Gazlı İçecekler", "Çay, Kahve"],
-            "Temizlik dan Deterjan": ["Çamaşır ve Bulaşık Deterjanları", "Yüzey Temizleyiciler, Çamaşır Suları", "Sıvı Sabunlar ve Bulaşık Telleri"],
+            "Temizlik ve Deterjan": ["Çamaşır ve Bulaşık Deterjanları", "Yüzey Temizleyiciler, Çamaşır Suları", "Sıvı Sabunlar ve Bulaşık Telleri"],
             "Kağıt, Kozmetik ve Kişisel Bakım": ["Tuvalet Kağıdı, Kağıt Havlu, Peçete", "Şampuan, Duş Jeli, Sabun", "Diş Macunu, Diş Fırçası", "Bebek Bezi ve Islak Mendil"],
             "Züccaciye ve Mutfak": ["Mutfak Gereçleri", "Pişirme Grubu", "Sofra & Servis", "Plastik ve Saklama Kapları"],
             "Kırtasiye": ["Okul ve Ofis Malzemeleri", "Kağıt Ürünleri", "Yazı ve Çizim Gereçleri", "Hobi ve Boya Malzemeleri"],
@@ -271,7 +271,7 @@
         };
 
         let products = [];
-        let allProducts = []; // Arama için tüm ürünleri hafızada tutacak değişken
+        let allProducts = [];
         let fetchedOrders = [];
 
         window.onload = () => {
@@ -506,17 +506,18 @@
             updateSubCategories();
         }
 
-        function updateSubCategories() {
+        function updateSubCategories(selectedSub = "") {
             const mainCat = document.getElementById("pMainCat").value;
             const subSelect = document.getElementById("pSubCat");
-            subSelect.innerHTML = `<option value="">Alt Kategori Seçiniz</option>` + (categoryData[mainCat] || []).map(sub => `<option value="${sub}">${sub}</option>`).join('');
+            const subs = categoryData[mainCat] || [];
+            subSelect.innerHTML = `<option value="">Alt Kategori Seçiniz</option>` + subs.map(sub => `<option value="${sub}" ${sub === selectedSub ? 'selected' : ''}>${sub}</option>`).join('');
         }
 
         async function fetchProducts() {
             const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
             if (error || !data) return;
             products = data;
-            allProducts = data; // Tüm ürünleri arama için hafızaya alıyoruz
+            allProducts = data;
             renderProducts(allProducts);
         }
 
@@ -527,7 +528,7 @@
                     <td class="p-3 font-mono text-xs text-gray-500">${p.barcode || '-'}</td>
                     <td class="p-3"><img src="${p.image_url || 'https://via.placeholder.com/40'}" class="w-10 h-10 object-cover rounded"></td>
                     <td class="p-3 font-bold">${p.name}</td>
-                    <td class="p-3 text-xs text-gray-500">${p.main_category || '-'}</td>
+                    <td class="p-3 text-xs text-gray-500">${p.main_category || '-'}<br><span class="text-gray-400">${p.sub_category || ''}</span></td>
                     <td class="p-3 font-semibold text-green-600">${p.price} TL</td>
                     <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${p.stock > 5 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${p.stock} ${p.unit}</span></td>
                     <td class="p-3 text-right">
@@ -538,13 +539,13 @@
             `).join('');
         }
 
-        // Arama Filtreleme Fonksiyonu
         function filterAdminProducts() {
             const query = document.getElementById("productSearchInput").value.toLowerCase().trim();
             const filtered = allProducts.filter(p => {
                 const nameMatch = p.name && p.name.toLowerCase().includes(query);
                 const barcodeMatch = p.barcode && p.barcode.toLowerCase().includes(query);
-                return nameMatch || barcodeMatch;
+                const catMatch = p.main_category && p.main_category.toLowerCase().includes(query);
+                return nameMatch || barcodeMatch || catMatch;
             });
             renderProducts(filtered);
         }
@@ -575,8 +576,7 @@
             document.getElementById("pBarcode").value = p.barcode || '';
             document.getElementById("pName").value = p.name;
             document.getElementById("pMainCat").value = p.main_category || '';
-            updateSubCategories();
-            document.getElementById("pSubCat").value = p.sub_category || '';
+            updateSubCategories(p.sub_category || '');
             document.getElementById("pPrice").value = p.price;
             document.getElementById("pStock").value = p.stock;
             document.getElementById("pUnit").value = p.unit || 'Adet';
