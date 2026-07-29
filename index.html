@@ -5,7 +5,7 @@
     <meta name="description" content="Samsun'da taze sebze, meyve, gıda, oyuncak ve market ürünleri Öz Murat Market'te. Hemen sipariş verin." />
     <meta name="google-site-verification" content="MwrKCxvlgsrnT0boGqCRg4A9Eujd9E4l5ZNsMy7bYTQ" />
     <title>Öz Murat Market | Samsun İlkadım Online Market ve Manav</title>
-    <meta name="description" content="Samsun İlkadım'da taze meyve, sebze, süt ürünleri ve temel gıda alışverişi. Hızlı ve güvenilir     market teslimatı." />
+    <meta name="description" content="Samsun İlkadım'da taze meyve, sebze, süt ürünleri ve temel gıda alışverişi. Hızlı ve güvenilir market teslimatı." />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Öz Murat Market | Online Market & Manav</title>
@@ -160,7 +160,7 @@
                     <span id="cartTotal" class="text-green-600">0.00 TL</span>
                 </div>
                 <div class="text-xs text-amber-600 font-semibold mb-4">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Minimum sipariş tutarı 500.00 TL'dir.
+                    <i class="fa-solid fa-circle-info mr-1"></i> Minimum sipariş tutarı 500.00 TL'dir[cite: 2].
                 </div>
 
                 <div class="space-y-2 mb-4">
@@ -189,21 +189,26 @@
         </div>
     </div>
 
-    <!-- ÜYELİK & GİRİŞ MODAL -->
+    <!-- ÜYELİK, GİRİŞ & ŞİFRE YENİLEME MODAL -->
     <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
             <button onclick="closeAuthModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
 
+            <!-- GİRİŞ FORMU -->
             <div id="loginFormArea">
                 <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-right-to-bracket text-green-600"></i> Müşteri Girişi</h3>
                 <div class="space-y-3">
                     <input type="tel" id="loginPhone" placeholder="Telefon Numaranız" class="w-full border p-2 rounded text-sm">
                     <input type="password" id="loginPass" placeholder="Şifreniz" class="w-full border p-2 rounded text-sm">
+                    <div class="text-right">
+                        <a href="#" onclick="toggleAuthView('forgot')" class="text-xs text-green-600 hover:underline font-semibold">Şifremi Unuttum?</a>
+                    </div>
                     <button onclick="loginCustomer()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700">Giriş Yap</button>
                 </div>
                 <p class="text-xs text-center text-gray-500 mt-4">Hesabınız yok mu? <a href="#" onclick="toggleAuthView('register')" class="text-green-600 font-bold underline">Hemen Üye Olun</a></p>
             </div>
 
+            <!-- KAYIT FORMU -->
             <div id="registerFormArea" class="hidden">
                 <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus text-green-600"></i> Yeni Üye Kaydı</h3>
                 <div class="space-y-3">
@@ -221,6 +226,18 @@
                     <button onclick="registerCustomer()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700">Kayıt Ol</button>
                 </div>
                 <p class="text-xs text-center text-gray-500 mt-4">Zaten üye misiniz? <a href="#" onclick="toggleAuthView('login')" class="text-green-600 font-bold underline">Giriş Yapın</a></p>
+            </div>
+
+            <!-- ŞİFREMİ UNUTTUM FORMU -->
+            <div id="forgotFormArea" class="hidden">
+                <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2"><i class="fa-solid fa-key text-green-600"></i> Şifre Yenileme</h3>
+                <p class="text-xs text-gray-500 mb-4">Kayıtlı telefon numaranızı girin ve yeni şifrenizi belirleyin.</p>
+                <div class="space-y-3">
+                    <input type="tel" id="forgotPhone" placeholder="Kayıtlı Telefon Numaranız (5XX...)" class="w-full border p-2 rounded text-sm">
+                    <input type="password" id="newPass" placeholder="Yeni Şifreniz" class="w-full border p-2 rounded text-sm">
+                    <button onclick="resetPassword()" class="w-full bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700">Şifreyi Güncelle</button>
+                </div>
+                <p class="text-xs text-center text-gray-500 mt-4"><a href="#" onclick="toggleAuthView('login')" class="text-green-600 font-bold underline">Giriş Ekranına Dön</a></p>
             </div>
         </div>
     </div>
@@ -419,6 +436,35 @@
             showToast(`Hoş geldiniz, ${data.full_name}!`, "success");
         }
 
+        async function resetPassword() {
+            const phone = document.getElementById("forgotPhone").value.trim();
+            const newPassword = document.getElementById("newPass").value.trim();
+
+            if(!phone || !newPassword) return showToast("Lütfen telefon numaranızı ve yeni şifrenizi giriniz.", "warning");
+
+            // Önce bu telefonla kayıtlı kullanıcı olup olmadığını kontrol edelim
+            const { data: userCheck, error: checkError } = await db.from('customers')
+                .select('id')
+                .eq('phone', phone)
+                .single();
+
+            if(checkError || !userCheck) {
+                return showToast("Bu telefon numarasına kayıtlı bir üyelik bulunamadı!", "error");
+            }
+
+            // Şifreyi güncelle
+            const { error: updateError } = await db.from('customers')
+                .update({ password: newPassword })
+                .eq('phone', phone);
+
+            if(updateError) {
+                return showToast("Şifre güncellenemedi: " + updateError.message, "error");
+            }
+
+            showToast("Şifreniz başarıyla güncellendi! Şimdi giriş yapabilirsiniz.", "success");
+            toggleAuthView('login');
+        }
+
         function logoutCustomer() {
             loggedInCustomer = null;
             localStorage.removeItem('ozmurat_customer');
@@ -467,12 +513,17 @@
         function closeOrdersModal() { document.getElementById("ordersModal").classList.add("hidden"); }
         function openAuthModal(view) { document.getElementById("authModal").classList.remove("hidden"); toggleAuthView(view); }
         function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
+        
         function toggleAuthView(view) {
+            document.getElementById("loginFormArea").classList.add("hidden");
+            document.getElementById("registerFormArea").classList.add("hidden");
+            document.getElementById("forgotFormArea").classList.add("hidden");
+
             if(view === 'register') {
-                document.getElementById("loginFormArea").classList.add("hidden");
                 document.getElementById("registerFormArea").classList.remove("hidden");
+            } else if(view === 'forgot') {
+                document.getElementById("forgotFormArea").classList.remove("hidden");
             } else {
-                document.getElementById("registerFormArea").classList.add("hidden");
                 document.getElementById("loginFormArea").classList.remove("hidden");
             }
         }
