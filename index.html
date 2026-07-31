@@ -12,8 +12,49 @@
 </head>
 <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
 
+    <!-- 🛑 YENİ TABELA BANNER ALANI (SİYAHSIZ, DOĞRUDAN KIRMIZI & BEYAZ DÜZEN) -->
+    <div class="bg-white border-b-2 border-red-600 shadow-md py-4 px-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Sol Kısım: Marka ve Slogan -->
+            <div class="flex items-center gap-3">
+                <div class="bg-red-600 text-white p-3 rounded-xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-basket-shopping text-3xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black tracking-wider text-red-600 leading-none">
+                        ÖZ MURAT <span class="text-gray-900">MARKET</span>
+                    </h1>
+                    <span class="text-xs font-bold text-gray-500 tracking-widest uppercase mt-1 block">
+                        Toptan &amp; Perakende Online Satış
+                    </span>
+                </div>
+            </div>
+
+            <!-- Orta/Sağ Kısım: Hızlı İletişim & Güvence Rozetleri -->
+            <div class="flex items-center gap-3 text-xs">
+                <div class="hidden sm:flex items-center gap-2 bg-red-50 text-red-700 px-4 py-2 rounded-lg border border-red-200 font-semibold">
+                    <i class="fa-solid fa-store text-lg text-red-600"></i>
+                    <div>
+                        <span class="block text-[10px] text-gray-500 uppercase font-bold">1989'dan Beri</span>
+                        <span>Güvenilir Mahalle Marketiniz</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-lg border border-green-200 font-semibold">
+                    <i class="fa-solid fa-truck-fast text-lg text-green-600"></i>
+                    <div>
+                        <span class="block text-[10px] text-gray-500 uppercase font-bold">Samsun / İlkadım</span>
+                        <span>Hızlı Kapıya Teslimat</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /TABELA ALANI BİTİŞİ -->
+
     <!-- BİLDİRİM (TOAST) KONTEYNERİ -->
-    <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-2"></div>
+    <div id="toastContainer" class="fixed top-20 right-5 z-[100] flex flex-col gap-2"></div>
 
     <!-- ÇEREZ BİLDİRİM BANNER'I -->
     <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-[110] shadow-lg hidden flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
@@ -38,21 +79,17 @@
         </div>
     </div>
 
-    <!-- HEADER -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center gap-4">
-            <a href="#" onclick="filterMainCategory('Tümü')" class="text-2xl font-bold text-green-600 flex items-center gap-2">
-                <i class="fa-solid fa-basket-shopping text-3xl"></i> Öz Murat Market
-            </a>
-
-            <div class="hidden md:flex flex-1 max-w-md mx-4">
-                <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Ürün veya kategori ara..." class="w-full border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:border-green-500">
+    <!-- HEADER / ARAMA ÇUBUĞU -->
+    <header class="bg-white shadow-sm border-b sticky top-[77px] z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
+            <div class="hidden md:flex flex-1 max-w-lg">
+                <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Ürün veya kategori ara..." class="w-full border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:border-green-500 text-sm">
                 <button class="bg-green-600 text-white px-4 py-2 rounded-r-lg hover:bg-green-700">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 ml-auto">
                 <div id="userAuthArea">
                     <button onclick="openAuthModal('login')" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
                         <i class="fa-solid fa-user mr-1"></i> Giriş Yap / Üye Ol
@@ -69,7 +106,7 @@
     </header>
 
     <!-- KATEGORİ ALANLARI -->
-    <section class="bg-white border-b sticky top-[73px] z-40 shadow-sm">
+    <section class="bg-white border-b sticky top-[138px] z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto" id="mainCategoryButtons"></div>
     </section>
 
