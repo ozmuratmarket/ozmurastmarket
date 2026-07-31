@@ -350,7 +350,7 @@
                 contentEl.innerHTML = `
                     <p><strong>Veri Sorumlusu:</strong> Öz Murat Market (Samsun / İlkadım)</p>
                     <p>6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, müşterilerimizin kimlik, iletişim, sipariş ve teslimat adres bilgileri; siparişlerin alınması, ödeme işlemlerinin gerçekleştirilmesi, ürün teslimatının yapılması ve müşteri memnuniyetinin sağlanması amacıyla işlenmektedir.</p>
-                    <p>Toplanan kişisel verileriniz yasal zorunluluklar haricinde üçüncü şahıslarla paylaşılmaz. Haklarınızla ilgili bilgi almak için bizimle iletişime geçebilirsiniz.</p>
+                    <p>Toplanan kişisel verileriniz yasal zorunluluklar haricinde üçüncü şahıslarla paylaşılmaz. Haklarınızle ilgili bilgi almak için bizimle iletişime geçebilirsiniz.</p>
                 `;
             } else if(type === 'mesafeli') {
                 titleEl.innerText = "Mesafeli Satış Sözleşmesi";
@@ -572,6 +572,10 @@
         function renderMainCategories() {
             const container = document.getElementById("mainCategoryButtons");
             let html = `<button onclick="filterMainCategory('Tümü')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'Tümü' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-600 hover:text-white'} transition">Tümü</button>`;
+            
+            // İNDİRİMLİ ÜRÜNLER KATEGORİSİ ("TÜMÜ"NDEN HEMEN SONRA)
+            html += `<button onclick="filterMainCategory('İndirimli Ürünler')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'İndirimli Ürünler' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-600 hover:text-white'} transition"><i class="fa-solid fa-percent mr-1"></i> İndirimli Ürünler</button>`;
+
             Object.keys(categoryData).forEach(cat => {
                 const isActive = activeMainCategory === cat;
                 html += `<button onclick="filterMainCategory('${cat}')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${isActive ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-600 hover:text-white'} transition">${cat}</button>`;
@@ -587,9 +591,18 @@
             const subSection = document.getElementById("subCategorySection");
             const subContainer = document.getElementById("subCategoryButtons");
 
-            if (cat === "Tümü" || !categoryData[cat]) {
+            if (cat === "Tümü") {
                 subSection.classList.add("hidden");
                 document.getElementById("currentCategoryTitle").innerText = "Tüm Ürünler";
+                renderProducts(allProducts);
+            } else if (cat === "İndirimli Ürünler") {
+                subSection.classList.add("hidden");
+                document.getElementById("currentCategoryTitle").innerText = "İndirimli Ürünler";
+                const discountedItems = allProducts.filter(p => p.discount_price !== null && p.discount_price !== undefined && p.discount_price > 0);
+                renderProducts(discountedItems);
+            } else if (!categoryData[cat]) {
+                subSection.classList.add("hidden");
+                document.getElementById("currentCategoryTitle").innerText = cat;
                 renderProducts(allProducts);
             } else {
                 subSection.classList.remove("hidden");
@@ -624,14 +637,27 @@
             container.innerHTML = items.map(p => {
                 const isOutOfStock = p.stock <= 0;
                 const img = p.image_url || 'https://via.placeholder.com/300?text=Urun+Resmi';
+                
+                const hasDiscount = p.discount_price !== null && p.discount_price !== undefined && p.discount_price > 0;
+                const activePrice = hasDiscount ? p.discount_price : p.price;
+
                 return `
                 <div class="bg-white rounded-lg shadow-sm border p-4 flex flex-col justify-between hover:shadow-md transition relative">
-                    ${isOutOfStock ? `<span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold">Stokta Yok</span>` : ''}
+                    ${isOutOfStock ? `<span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold z-10">Stokta Yok</span>` : (hasDiscount ? `<span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold z-10"><i class="fa-solid fa-percent mr-1"></i>İndirim</span>` : '')}
                     <img src="${img}" alt="${p.name}" class="w-full h-40 object-cover rounded-md mb-3 ${isOutOfStock ? 'opacity-50' : ''}">
                     <div>
                         <span class="text-[10px] bg-green-50 text-green-700 px-2 py-1 rounded font-semibold uppercase">${p.sub_category || p.main_category}</span>
                         <h3 class="font-bold text-gray-800 text-base mt-2">${p.name}</h3>
-                        <p class="text-xl font-bold text-gray-900 mt-1">${p.price} TL <span class="text-xs text-gray-500 font-normal">/ ${p.unit}</span></p>
+                        <div class="mt-1">
+                            ${hasDiscount ? `
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-400 line-through">${p.price} TL</span>
+                                    <span class="text-xl font-bold text-red-600">${p.discount_price} TL <span class="text-xs text-gray-500 font-normal">/ ${p.unit}</span></span>
+                                </div>
+                            ` : `
+                                <p class="text-xl font-bold text-gray-900">${p.price} TL <span class="text-xs text-gray-500 font-normal">/ ${p.unit}</span></p>
+                            `}
+                        </div>
                         <p class="text-xs text-gray-400 mt-1">Stok: ${p.stock} ${p.unit}</p>
                     </div>
                     <button onclick="addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''} class="mt-4 w-full ${isOutOfStock ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-2 rounded transition flex items-center justify-center gap-2 text-sm">
@@ -643,19 +669,28 @@
 
         function searchProducts() {
             const query = document.getElementById("searchInput").value.toLowerCase();
-            renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query) || p.main_category.toLowerCase().includes(query)));
+            if (activeMainCategory === 'İndirimli Ürünler') {
+                const discountedItems = allProducts.filter(p => p.discount_price !== null && p.discount_price !== undefined && p.discount_price > 0);
+                renderProducts(discountedItems.filter(p => p.name.toLowerCase().includes(query) || p.main_category.toLowerCase().includes(query)));
+            } else {
+                renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query) || p.main_category.toLowerCase().includes(query)));
+            }
         }
 
         function addToCart(productId) {
             const product = allProducts.find(p => p.id === productId);
             if(!product || product.stock <= 0) return;
+            
+            const hasDiscount = product.discount_price !== null && product.discount_price !== undefined && product.discount_price > 0;
+            const finalPrice = hasDiscount ? product.discount_price : product.price;
+
             const existItem = cart.find(item => item.id === productId);
 
             if(existItem) {
                 if(existItem.qty < product.stock) existItem.qty += 1;
                 else return showToast("Stok sınırına ulaşıldı.", "warning");
             } else {
-                cart.push({ ...product, qty: 1 });
+                cart.push({ ...product, price: finalPrice, qty: 1 });
             }
             updateCartUI();
             showToast(`${product.name} sepete eklendi.`, "success");
