@@ -248,7 +248,7 @@
                 <div class="space-y-3">
                     <input type="text" id="regName" placeholder="Ad Soyad *" class="w-full border p-2 rounded text-sm">
                     <input type="tel" id="regPhone" placeholder="Telefon Numarası (5XX...) *" class="w-full border p-2 rounded text-sm">
-                    <input type="email" id="regEmail" placeholder="E-posta Adresi (Opsiyonel)" class="w-full border p-2 rounded text-sm">
+                    <input type="email" id="regEmail" placeholder="E-posta Adresi *" class="w-full border p-2 rounded text-sm" required>
                     <input type="password" id="regPass" placeholder="Şifre *" class="w-full border p-2 rounded text-sm">
                     <textarea id="regAddress" placeholder="Varsayılan Teslimat Adresi" class="w-full border p-2 rounded text-sm" rows="2"></textarea>
                     
@@ -435,7 +435,7 @@
             const address = document.getElementById("regAddress").value.trim();
             const kvkkChecked = document.getElementById("regKvkk").checked;
 
-            if(!full_name || !phone || !password) return showToast("Lütfen Ad, Telefon ve Şifre alanlarını doldurunuz.", "error");
+            if(!full_name || !phone || !email || !password) return showToast("Lütfen Ad, Telefon, E-posta ve Şifre alanlarını doldurunuz.", "error");
             if(!kvkkChecked) return showToast("Üye olmak için KVKK metnini onaylamalısınız.", "warning");
 
             const { data, error } = await db.from('customers').insert([{
@@ -443,7 +443,7 @@
             }]).select();
 
             if(error) {
-                if(error.message.includes("unique")) return showToast("Bu telefon numarası ile zaten kayıtlı bir hesap var!", "warning");
+                if(error.message.includes("unique")) return showToast("Bu telefon numarası veya e-posta ile zaten kayıtlı bir hesap var!", "warning");
                 return showToast("Kayıt hatası: " + error.message, "error");
             }
 
