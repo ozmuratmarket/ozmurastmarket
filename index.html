@@ -12,9 +12,11 @@
 </head>
 <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
 
-    <!-- TABELA BANNER ALANI -->
+    <!-- 🛑 YENİ TABELA BANNER ALANI (SİYAHSIZ, DOĞRUDAN KIRMIZI & BEYAZ DÜZEN) -->
     <div class="bg-white border-b-2 border-red-600 shadow-md py-4 px-4 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Sol Kısım: Marka ve Slogan -->
             <div class="flex items-center gap-3">
                 <div class="bg-red-600 text-white p-3 rounded-xl shadow-md flex items-center justify-center">
                     <i class="fa-solid fa-basket-shopping text-3xl"></i>
@@ -28,6 +30,8 @@
                     </span>
                 </div>
             </div>
+
+            <!-- Orta/Sağ Kısım: Hızlı İletişim & Güvence Rozetleri -->
             <div class="flex items-center gap-3 text-xs">
                 <div class="hidden sm:flex items-center gap-2 bg-red-50 text-red-700 px-4 py-2 rounded-lg border border-red-200 font-semibold">
                     <i class="fa-solid fa-store text-lg text-red-600"></i>
@@ -44,17 +48,19 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+    <!-- /TABELA ALANI BİTİŞİ -->
 
     <!-- BİLDİRİM (TOAST) KONTEYNERİ -->
     <div id="toastContainer" class="fixed top-20 right-5 z-[100] flex flex-col gap-2"></div>
 
-    <!-- ÇEREZ BİLDİRİMİ -->
+    <!-- ÇEREZ BİLDİRİM BANNER'I -->
     <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-[110] shadow-lg hidden flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
         <div>
             <i class="fa-solid fa-cookie-bite text-amber-400 mr-2"></i> 
-            Web sitemizde deneyiminizi geliştirmek için çerezler kullanılmaktadır. Detaylı bilgi için <a href="#" onclick="openLegalModal('cookie')" class="underline text-green-400">Çerez Politikamızı</a> inceleyebilirsiniz.
+            Web sitemizde, deneyiminizi geliştirmek ve yasal mevzuata uygunluk sağlamak amacıyla çerezler kullanılmaktadır. Detaylı bilgi için <a href="#" onclick="openLegalModal('cookie')" class="underline text-green-400">Çerez Politikamızı</a> inceleyebilirsiniz.
         </div>
         <button onclick="acceptCookies()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold whitespace-nowrap">Kabul Et</button>
     </div>
@@ -73,7 +79,7 @@
         </div>
     </div>
 
-    <!-- HEADER / ARAMA -->
+    <!-- HEADER / ARAMA ÇUBUĞU -->
     <header class="bg-white shadow-sm border-b sticky top-[77px] z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
             <div class="hidden md:flex flex-1 max-w-lg">
@@ -82,12 +88,14 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
+
             <div class="flex items-center gap-3 ml-auto">
                 <div id="userAuthArea">
                     <button onclick="openAuthModal('login')" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">
                         <i class="fa-solid fa-user mr-1"></i> Giriş Yap / Üye Ol
                     </button>
                 </div>
+
                 <button onclick="toggleCart()" class="relative bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-green-200 transition">
                     <i class="fa-solid fa-cart-shopping text-lg"></i>
                     <span class="hidden sm:inline">Sepetim</span>
@@ -97,7 +105,7 @@
         </div>
     </header>
 
-    <!-- KATEGORİLER -->
+    <!-- KATEGORİ ALANLARI -->
     <section class="bg-white border-b sticky top-[138px] z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto" id="mainCategoryButtons"></div>
     </section>
@@ -106,9 +114,10 @@
         <div class="max-w-7xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto" id="subCategoryButtons"></div>
     </section>
 
-    <!-- İÇERİK -->
+    <!-- İÇERİK BÖLÜMÜ -->
     <main class="max-w-7xl mx-auto px-4 py-8 flex-grow">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            
             <aside class="lg:col-span-1">
                 <div class="bg-gradient-to-br from-green-800 to-green-600 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden text-center border-2 border-green-500/30">
                     <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl font-extrabold select-none">1989</div>
@@ -121,8 +130,13 @@
                     <p class="text-xs text-green-100 leading-relaxed font-medium">
                         30 yılı aşkın tecrübemizle en taze meyve, sebze ve en kaliteli gıda ürünlerini kapınıza kadar getiriyoruz.
                     </p>
+                    <div class="mt-6 pt-4 border-t border-white/10 grid grid-cols-2 gap-2 text-[11px] text-green-100 font-semibold">
+                        <div class="flex items-center justify-center gap-1"><i class="fa-solid fa-apple-whole text-amber-300"></i> %100 Taze</div>
+                        <div class="flex items-center justify-center gap-1"><i class="fa-solid fa-truck-fast text-amber-300"></i> Hızlı Teslimat</div>
+                    </div>
                 </div>
             </aside>
+
             <section class="lg:col-span-3">
                 <div class="flex justify-between items-center mb-6">
                     <h2 id="currentCategoryTitle" class="text-2xl font-bold text-gray-800">Tüm Ürünler</h2>
@@ -130,10 +144,11 @@
                 </div>
                 <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 gap-6"></div>
             </section>
+
         </div>
     </main>
 
-    <!-- FOOTER -->
+    <!-- RESMİ YASAL FOOTER (KÜNYE) -->
     <footer class="bg-gray-800 text-gray-300 text-xs py-8 px-4 mt-auto border-t border-gray-700">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -145,6 +160,7 @@
                 <p><strong>Unvan:</strong> Öz Murat Market Gıda San. Tic.</p>
                 <p><strong>Adres:</strong> Kışla Mah. Kokulu Sk. No:28, İlkadım / Samsun</p>
                 <p><strong>Telefon:</strong> (0362) 236 36 10</p>
+                <p class="mt-1"><strong>MERSİS / V.D.:</strong> Vergi No: Esnaf Sicil Kayıtlıdır</p>
             </div>
             <div>
                 <h4 class="font-bold text-white text-sm mb-2">Yasal Politikalar</h4>
@@ -157,7 +173,7 @@
             </div>
         </div>
         <div class="max-w-7xl mx-auto border-t border-gray-700 mt-6 pt-4 text-center text-gray-500 text-[11px]">
-            &copy; 2026 Öz Murat Market - Tüm Hakları Saklıdır.
+            &copy; 2026 Öz Murat Market - Tüm Hakları Saklıdır. E-Ticaret altyapısı yasal mevzuata uygundur.
         </div>
     </footer>
 
@@ -184,18 +200,18 @@
                 <div class="space-y-2 mb-4">
                     <input type="text" id="custName" placeholder="Adınız Soyadınız *" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500">
                     <input type="tel" id="custPhone" placeholder="Telefon Numaranız (5XX...)" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500">
-                    <input type="email" id="custEmail" placeholder="E-posta Adresiniz (Sipariş onayı için) *" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500">
                     <textarea id="custAddress" placeholder="Teslimat Adresiniz *" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500" rows="2"></textarea>
                     <textarea id="orderNote" placeholder="Sipariş Notu (Örn: Zili çalmayın...)" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500 bg-amber-50/50 border-amber-200" rows="2"></textarea>
                     
+                    <!-- YASAL ONAY KUTULARI (ZORUNLU) -->
                     <div class="space-y-1.5 pt-2 text-xs text-gray-600">
                         <label class="flex items-start gap-2 cursor-pointer">
                             <input type="checkbox" id="chkKvkk" class="mt-0.5 rounded text-green-600 focus:ring-green-500">
-                            <span><a href="#" onclick="openLegalModal('kvkk'); return false;" class="text-green-700 underline font-semibold">KVKK Aydınlatma Metni</a>'ni okudum ve onaylıyorum. *</span>
+                            <span><a href="#" onclick="openLegalModal('kvkk'); return false;" class="text-green-700 underline font-semibold">KVKK Aydınlatma Metni</a>'ni okudum ve kişisel verilerimin işlenmesine onay veriyorum. *</span>
                         </label>
                         <label class="flex items-start gap-2 cursor-pointer">
                             <input type="checkbox" id="chkContract" class="mt-0.5 rounded text-green-600 focus:ring-green-500">
-                            <span><a href="#" onclick="openLegalModal('mesafeli'); return false;" class="text-green-700 underline font-semibold">Mesafeli Satış Sözleşmesi</a>'ni kabul ediyorum. *</span>
+                            <span><a href="#" onclick="openLegalModal('mesafeli'); return false;" class="text-green-700 underline font-semibold">Mesafeli Satış Sözleşmesi</a>'ni ve Ön Bilgilendirme Koşulları'nı okudum, kabul ediyorum. *</span>
                         </label>
                     </div>
                 </div>
@@ -260,7 +276,7 @@
         </div>
     </div>
 
-    <!-- SİPARİŞ GEÇMİŞİ MODAL -->
+    <!-- MÜŞTERİ SİPARİŞ GEÇMİŞİ MODAL -->
     <div id="ordersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative max-h-[85vh] flex flex-col">
             <button onclick="closeOrdersModal()" class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
@@ -334,22 +350,31 @@
                 contentEl.innerHTML = `
                     <p><strong>Veri Sorumlusu:</strong> Öz Murat Market (Samsun / İlkadım)</p>
                     <p>6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, müşterilerimizin kimlik, iletişim, sipariş ve teslimat adres bilgileri; siparişlerin alınması, ödeme işlemlerinin gerçekleştirilmesi, ürün teslimatının yapılması ve müşteri memnuniyetinin sağlanması amacıyla işlenmektedir.</p>
+                    <p>Toplanan kişisel verileriniz yasal zorunluluklar haricinde üçüncü şahıslarla paylaşılmaz. Haklarınızle ilgili bilgi almak için bizimle iletişime geçebilirsiniz.</p>
                 `;
             } else if(type === 'mesafeli') {
                 titleEl.innerText = "Mesafeli Satış Sözleşmesi";
                 contentEl.innerHTML = `
                     <p><strong>MADDE 1 - TARAFLAR</strong><br>İş bu sözleşme Öz Murat Market (Satıcı) ile internet sitesi üzerinden sipariş veren Alıcı arasındadır.</p>
+                    <p><strong>MADDE 2 - KONU</strong><br>İş bu sözleşmenin konusu, Alıcı'nın satıcıya ait internet sitesinden elektronik ortamda siparişini yaptığı mal/hizmetin satışı ve teslimi ile ilgili olarak Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların hak ve yükümlülüklerinin saptanmasıdır.</p>
+                    <p><strong>MADDE 3 - TESLİMAT</strong><br>Teslimat, satıcının kuryesi ile alıcının belirttiği adrese yapılır. Çabuk bozulabilen gıda maddelerinde cayma hakkı sınırlamaları geçerlidir.</p>
                 `;
             } else if(type === 'onbilgilendirme') {
                 titleEl.innerText = "Ön Bilgilendirme Koşulları";
-                contentEl.innerHTML = `<p>Alıcı, sipariş vermeden önce ürünlerin vergiler dahil toplam fiyatını, ödeme şeklini, teslimat masraflarını ve cayma hakkı koşullarını bu form ile okuyup bilgilendirildiğini kabul eder.</p>`;
+                contentEl.innerHTML = `
+                    <p>Alıcı, sipariş vermeden önce ürünlerin vergiler dahil toplam fiyatını, ödeme şeklini, teslimat masraflarını ve cayma hakkı koşullarını bu form ile okuyup bilgilendirildiğini kabul eder.</p>
+                `;
             } else if(type === 'cookie') {
                 titleEl.innerText = "Çerez Politikası";
-                contentEl.innerHTML = `<p>Sitemizde oturum yönetimi, sepet takibi ve kullanıcı deneyiminin iyileştirilmesi amacıyla yerel depolama (localStorage) çerezleri kullanılmaktadır.</p>`;
+                contentEl.innerHTML = `
+                    <p>Sitemizde oturum yönetimi, sepet takibi ve kullanıcı deneyiminin iyileştirilmesi amacıyla yerel depolama (localStorage) çerezleri kullanılmaktadır.</p>
+                `;
             }
         }
 
-        function closeLegalModal() { document.getElementById('legalModal').classList.add('hidden'); }
+        function closeLegalModal() {
+            document.getElementById('legalModal').classList.add('hidden');
+        }
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
@@ -392,8 +417,6 @@
                 `;
                 document.getElementById("custName").value = loggedInCustomer.full_name || '';
                 document.getElementById("custPhone").value = loggedInCustomer.phone || '';
-                const emailInput = document.getElementById("custEmail");
-                if(emailInput) emailInput.value = loggedInCustomer.email || '';
                 document.getElementById("custAddress").value = loggedInCustomer.address || '';
             } else {
                 area.innerHTML = `
@@ -460,13 +483,17 @@
                 .eq('phone', phone)
                 .single();
 
-            if(checkError || !userCheck) return showToast("Bu telefon numarasına kayıtlı bir üyelik bulunamadı!", "error");
+            if(checkError || !userCheck) {
+                return showToast("Bu telefon numarasına kayıtlı bir üyelik bulunamadı!", "error");
+            }
 
             const { error: updateError } = await db.from('customers')
                 .update({ password: newPassword })
                 .eq('phone', phone);
 
-            if(updateError) return showToast("Şifre güncellenemedi: " + updateError.message, "error");
+            if(updateError) {
+                return showToast("Şifre güncellenemedi: " + updateError.message, "error");
+            }
 
             showToast("Şifreniz başarıyla güncellendi! Şimdi giriş yapabilirsiniz.", "success");
             toggleAuthView('login');
@@ -478,8 +505,6 @@
             renderUserUI();
             document.getElementById("custName").value = '';
             document.getElementById("custPhone").value = '';
-            const emailInput = document.getElementById("custEmail");
-            if(emailInput) emailInput.value = '';
             document.getElementById("custAddress").value = '';
             showToast("Çıkış yapıldı.", "warning");
         }
@@ -528,9 +553,13 @@
             document.getElementById("registerFormArea").classList.add("hidden");
             document.getElementById("forgotFormArea").classList.add("hidden");
 
-            if(view === 'register') document.getElementById("registerFormArea").classList.remove("hidden");
-            else if(view === 'forgot') document.getElementById("forgotFormArea").classList.remove("hidden");
-            else document.getElementById("loginFormArea").classList.remove("hidden");
+            if(view === 'register') {
+                document.getElementById("registerFormArea").classList.remove("hidden");
+            } else if(view === 'forgot') {
+                document.getElementById("forgotFormArea").classList.remove("hidden");
+            } else {
+                document.getElementById("loginFormArea").classList.remove("hidden");
+            }
         }
 
         async function fetchProducts() {
@@ -544,6 +573,7 @@
             const container = document.getElementById("mainCategoryButtons");
             let html = `<button onclick="filterMainCategory('Tümü')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'Tümü' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-600 hover:text-white'} transition">Tümü</button>`;
             
+            // İNDİRİMLİ ÜRÜNLER KATEGORİSİ ("TÜMÜ"NDEN HEMEN SONRA)
             html += `<button onclick="filterMainCategory('İndirimli Ürünler')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'İndirimli Ürünler' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-600 hover:text-white'} transition"><i class="fa-solid fa-percent mr-1"></i> İndirimli Ürünler</button>`;
 
             Object.keys(categoryData).forEach(cat => {
@@ -607,6 +637,7 @@
             container.innerHTML = items.map(p => {
                 const isOutOfStock = p.stock <= 0;
                 const img = p.image_url || 'https://via.placeholder.com/300?text=Urun+Resmi';
+                
                 const hasDiscount = p.discount_price !== null && p.discount_price !== undefined && p.discount_price > 0;
                 const activePrice = hasDiscount ? p.discount_price : p.price;
 
@@ -652,6 +683,7 @@
             
             const hasDiscount = product.discount_price !== null && product.discount_price !== undefined && product.discount_price > 0;
             const finalPrice = hasDiscount ? product.discount_price : product.price;
+
             const existItem = cart.find(item => item.id === productId);
 
             if(existItem) {
@@ -724,25 +756,22 @@
             
             const name = document.getElementById("custName").value.trim();
             const phone = document.getElementById("custPhone").value.trim();
-            const email = document.getElementById("custEmail").value.trim();
             const address = document.getElementById("custAddress").value.trim();
             const order_note = document.getElementById("orderNote").value.trim();
             const chkKvkk = document.getElementById("chkKvkk").checked;
             const chkContract = document.getElementById("chkContract").checked;
 
-            if(!name || !email || !address) return showToast("Lütfen Ad, E-posta ve Adres alanlarını doldurunuz.", "warning");
+            if(!name || !address) return showToast("Lütfen Adınızı ve Adresinizi doldurunuz.", "warning");
             if(!chkKvkk || !chkContract) return showToast("Siparişi tamamlamak için KVKK ve Mesafeli Satış Sözleşmesi'ni onaylamalısınız.", "error");
 
             const btn = document.getElementById("orderBtn");
             btn.disabled = true;
             btn.innerText = "Gönderiliyor...";
 
-            // 1. Siparişi Supabase 'orders' tablosuna kaydetme
             const { error } = await db.from('orders').insert([{
                 customer_id: loggedInCustomer ? loggedInCustomer.id : null,
                 customer_name: name,
                 customer_phone: phone,
-                customer_email: email,
                 customer_address: address,
                 order_note: order_note,
                 items: cart,
@@ -757,32 +786,6 @@
                 return;
             }
 
-            // 2. Resend ile Müşteriye Otomatik E-Posta Gönderimi
-            try {
-                await fetch('https://api.resend.com/emails', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer re_Nsf5qqUq_NtB3BB5FwsyGzkqXGmVb8n8h'
-                    },
-                    body: JSON.stringify({
-                        from: 'Öz Murat Market <onboarding@resend.dev>',
-                        to: [email],
-                        subject: 'Siparişiniz Alındı - Öz Murat Market',
-                        html: `
-                            <h2>Merhaba ${name},</h2>
-                            <p>Siparişiniz başarıyla alınmıştır ve hazırlanmaya başlamıştır.</p>
-                            <p><strong>Toplam Tutar:</strong> ${total.toFixed(2)} TL</p>
-                            <p><strong>Teslimat Adresi:</strong> ${address}</p>
-                            <hr>
-                            <p>Bizi tercih ettiğiniz için teşekkür ederiz!<br><strong>Öz Murat Market / Samsun İlkadım</strong></p>
-                        `
-                    })
-                });
-            } catch (mailErr) {
-                console.error("E-posta gönderilemedi:", mailErr);
-            }
-
             cart = [];
             document.getElementById("orderNote").value = "";
             document.getElementById("chkKvkk").checked = false;
@@ -790,7 +793,7 @@
             updateCartUI();
             toggleCart();
             btn.innerText = "Siparişi Tamamla & Gönder";
-            showToast("Siparişiniz başarıyla alındı ve e-posta gönderildi!", "success");
+            showToast("Siparişiniz başarıyla alındı!", "success");
         }
     </script>
 </body>
