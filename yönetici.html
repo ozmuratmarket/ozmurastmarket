@@ -77,22 +77,39 @@
                     </button>
                 </div>
 
-                <!-- 1. SEKME: GELEN SİPARİŞLER -->
+                <!-- 1. SEKME: GELEN SİPARİŞLER (YENİ DÜZENLİ TABLO YAPISI) -->
                 <section id="tabOrders" class="space-y-4">
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center bg-white p-4 rounded-xl border shadow-sm">
                         <div class="flex items-center gap-2">
-                            <h2 class="text-xl font-bold text-gray-800">Sipariş Listesi</h2>
-                            <span class="flex h-3 w-3 relative">
+                            <h2 class="text-lg font-bold text-gray-800">Sipariş Yönetimi</h2>
+                            <span class="flex h-2.5 w-2.5 relative">
                               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                             </span>
-                            <span class="text-xs text-green-600 font-semibold">Canlı Takip Aktif</span>
+                            <span class="text-xs text-green-600 font-semibold">Canlı Takip</span>
                         </div>
-                        <button onclick="fetchOrders()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-200">
+                        <button onclick="fetchOrders()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded text-xs font-semibold hover:bg-gray-200 border transition">
                             <i class="fa-solid fa-rotate mr-1"></i> Yenile
                         </button>
                     </div>
-                    <div id="ordersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-gray-50 border-b text-xs text-gray-500 uppercase tracking-wider">
+                                    <tr>
+                                        <th class="p-4">Sipariş ID & Tarih</th>
+                                        <th class="p-4">Müşteri Bilgileri</th>
+                                        <th class="p-4">Sipariş İçeriği</th>
+                                        <th class="p-4">Tutar</th>
+                                        <th class="p-4">Durum</th>
+                                        <th class="p-4 text-center">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersList" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- 2. SEKME: ÜRÜN YÖNETİMİ -->
@@ -181,7 +198,6 @@
                                 <span id="adminProductCount" class="text-xs font-semibold text-gray-500"></span>
                             </div>
                             
-                            <!-- ARAMA ÇUBUĞU -->
                             <div class="mb-4">
                                 <input type="text" id="productSearchInput" onkeyup="filterAdminProducts()" placeholder="🔍 Ürün adı veya barkod ile hızlıca ara..." class="w-full border p-2.5 rounded-lg text-sm focus:outline-none focus:border-green-500">
                             </div>
@@ -412,47 +428,103 @@
             }
         }
 
+        // SİPARİŞLERİ GETİRME VE 12 SAATİ GEÇENLERİ SİLME
         async function fetchOrders() {
             const container = document.getElementById("ordersList");
             const { data, error } = await db.from('orders').select('*').order('id', { ascending: false });
+            
             if(error || !data || data.length === 0) {
-                container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">Henüz sipariş yok.</p>`;
+                container.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-8">Henüz sipariş yok.</td></tr>`;
                 return;
             }
-            fetchedOrders = data;
-            container.innerHTML = data.map(o => `
-                <div class="bg-white p-5 rounded-xl border shadow-sm flex flex-col justify-between hover:border-green-400 transition">
-                    <div>
-                        <div class="flex justify-between items-start mb-3 border-b pb-2">
-                            <div>
-                                <span class="text-xs text-gray-400 font-semibold">SİPARİŞ #${o.id}</span>
-                                <h3 class="font-bold text-gray-800 text-lg">${o.customer_name}</h3>
-                            </div>
-                            <select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs font-bold px-2 py-1 rounded border">
-                                <option value="Hazırlanıyor" ${o.status === 'Hazırlanıyor' ? 'selected' : ''}>Hazırlanıyor</option>
-                                <option value="Yolda" ${o.status === 'Yolda' ? 'selected' : ''}>Yolda 🛵</option>
-                                <option value="Teslim Edildi" ${o.status === 'Teslim Edildi' ? 'selected' : ''}>Teslim Edildi ✅</option>
-                                <option value="İptal Edildi" ${o.status === 'İptal Edildi' ? 'selected' : ''}>İptal Edildi ❌</option>
-                            </select>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-1"><i class="fa-solid fa-phone text-green-600 mr-1"></i> ${o.customer_phone}</p>
-                        <p class="text-sm text-gray-600 mb-3"><i class="fa-solid fa-location-dot text-green-600 mr-1"></i> ${o.customer_address}</p>
-                        ${o.order_note ? `<div class="bg-amber-50 border border-amber-200 p-2.5 rounded-lg text-xs text-amber-900 mb-3"><span class="font-bold block mb-0.5">Not:</span> "${o.order_note}"</div>` : ''}
-                        <div class="bg-gray-50 p-3 rounded-lg text-xs space-y-1 mb-3 border">
-                            ${(o.items || []).map(i => `<div class="flex justify-between"><span>${i.name} x ${i.qty} ${i.unit}</span><span class="font-semibold">${(i.price * i.qty).toFixed(2)} TL</span></div>`).join('')}
-                        </div>
-                    </div>
-                    <div class="space-y-3 border-t pt-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400">${new Date(o.created_at).toLocaleTimeString('tr-TR')}</span>
-                            <span class="text-lg font-bold text-green-700">${o.total_amount} TL</span>
-                        </div>
-                        <button onclick="openReceiptModal(${o.id})" class="w-full bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold py-2 rounded-lg text-sm border border-blue-200 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-print"></i> Fiş Yazdır
+
+            const now = new Date().getTime();
+            const twelveHoursInMs = 12 * 60 * 60 * 1000;
+
+            // 12 saat geçen teslim edilmiş/iptal edilmiş siparişleri tespit edip veritabanından silme
+            const activeOrders = [];
+            for (let o of data) {
+                if ((o.status === 'Teslim Edildi' || o.status === 'İptal Edildi') && o.completed_at) {
+                    const completedTime = new Date(o.completed_at).getTime();
+                    if (now - completedTime > twelveHoursInMs) {
+                        await db.from('orders').delete().eq('id', o.id);
+                        continue; // Ekrana ekleme
+                    }
+                }
+                activeOrders.push(o);
+            }
+
+            fetchedOrders = activeOrders;
+
+            if(activeOrders.length === 0) {
+                container.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-8">Aktif sipariş bulunmuyor.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = activeOrders.map(o => {
+                const itemsSummary = (o.items || []).map(i => `<li class="flex justify-between gap-4"><span>• ${i.name} (${i.qty} ${i.unit})</span><span class="font-medium text-gray-700">${(i.price * i.qty).toFixed(2)} TL</span></li>`).join('');
+                
+                return `
+                <tr class="hover:bg-gray-50 transition border-b">
+                    <td class="p-4 align-top">
+                        <span class="font-mono text-xs font-bold text-gray-500 block">#${o.id}</span>
+                        <span class="text-xs text-gray-400 block mt-1"><i class="fa-regular fa-clock mr-1"></i>${new Date(o.created_at).toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})}</span>
+                        <span class="text-[10px] text-gray-400 block">${new Date(o.created_at).toLocaleDateString('tr-TR')}</span>
+                    </td>
+                    <td class="p-4 align-top">
+                        <div class="font-bold text-gray-800 text-sm">${o.customer_name}</div>
+                        <div class="text-xs text-green-700 font-semibold my-0.5"><i class="fa-solid fa-phone mr-1"></i>${o.customer_phone}</div>
+                        <div class="text-xs text-gray-500 max-w-xs leading-relaxed"><i class="fa-solid fa-location-dot mr-1 text-red-400"></i>${o.customer_address}</div>
+                        ${o.order_note ? `<div class="mt-2 text-[11px] bg-amber-50 text-amber-800 p-2 rounded border border-amber-200"><strong>Not:</strong> ${o.order_note}</div>` : ''}
+                    </td>
+                    <td class="p-4 align-top">
+                        <ul class="text-xs text-gray-600 space-y-1 bg-gray-50 p-2.5 rounded-lg border max-h-32 overflow-y-auto">
+                            ${itemsSummary}
+                        </ul>
+                    </td>
+                    <td class="p-4 align-top font-bold text-base text-green-700 whitespace-nowrap">
+                        ${o.total_amount} TL
+                    </td>
+                    <td class="p-4 align-top">
+                        <select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs font-bold px-2.5 py-1.5 rounded-lg border shadow-sm focus:outline-none ${getStatusClass(o.status)}">
+                            <option value="Hazırlanıyor" ${o.status === 'Hazırlanıyor' ? 'selected' : ''}>Hazırlanıyor ⏳</option>
+                            <option value="Yolda" ${o.status === 'Yolda' ? 'selected' : ''}>Yolda 🛵</option>
+                            <option value="Teslim Edildi" ${o.status === 'Teslim Edildi' ? 'selected' : ''}>Teslim Edildi ✅</option>
+                            <option value="İptal Edildi" ${o.status === 'İptal Edildi' ? 'selected' : ''}>İptal Edildi ❌</option>
+                        </select>
+                    </td>
+                    <td class="p-4 align-top text-center">
+                        <button onclick="openReceiptModal(${o.id})" class="bg-blue-50 text-blue-600 hover:bg-blue-100 p-2 rounded-lg text-xs font-bold border border-blue-200 transition inline-flex items-center gap-1" title="Fiş Yazdır">
+                            <i class="fa-solid fa-print"></i> Yazdır
                         </button>
-                    </div>
-                </div>
-            `).join('');
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Hazırlanıyor': return 'bg-yellow-50 text-yellow-800 border-yellow-300';
+                case 'Yolda': return 'bg-blue-50 text-blue-800 border-blue-300';
+                case 'Teslim Edildi': return 'bg-green-50 text-green-800 border-green-300';
+                case 'İptal Edildi': return 'bg-red-50 text-red-800 border-red-300';
+                default: return 'bg-gray-50 text-gray-800 border-gray-300';
+            }
+        }
+
+        // SİPARİŞ DURUMUNU GÜNCELLEME
+        async function updateOrderStatus(id, status) {
+            let updateData = { status };
+            // Teslim Edildi veya İptal Edildi seçilirse 12 saatlik sayacı başlatmak için completed_at kaydedilir
+            if (status === 'Teslim Edildi' || status === 'İptal Edildi') {
+                updateData.completed_at = new Date().toISOString();
+            } else {
+                updateData.completed_at = null;
+            }
+            
+            await db.from('orders').update(updateData).eq('id', id);
+            fetchOrders();
         }
 
         function openReceiptModal(orderId) {
@@ -486,7 +558,6 @@
         }
 
         function closeReceiptModal() { document.getElementById("receiptModal").classList.add("hidden"); }
-        async function updateOrderStatus(id, status) { await db.from('orders').update({ status }).eq('id', id); }
 
         async function fetchCustomers() {
             const container = document.getElementById("customerTableBody");
