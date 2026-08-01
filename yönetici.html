@@ -54,7 +54,7 @@
                         <i class="fa-solid fa-basket-shopping"></i> Öz Murat Market Admin
                     </h1>
                     <div class="flex items-center gap-3">
-                        <button onclick="playNotificationSound()" title="Sesi Test Et" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+                        <button onclick="playNotificationSound()" title="Sesi Test Et" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1 transition border">
                             <i class="fa-solid fa-volume-high text-green-600"></i> Ses Testi
                         </button>
                         <button onclick="handleLogout()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-100 transition">
@@ -77,7 +77,7 @@
                     </button>
                 </div>
 
-                <!-- 1. SEKME: GELEN SİPARİŞLER (YENİ DÜZENLİ TABLO YAPISI) -->
+                <!-- 1. SEKME: GELEN SİPARİŞLER -->
                 <section id="tabOrders" class="space-y-4">
                     <div class="flex justify-between items-center bg-white p-4 rounded-xl border shadow-sm">
                         <div class="flex items-center gap-2">
@@ -278,7 +278,7 @@
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const categoryData = {
-            "Meyve dan Sebze": ["Taze Meyveler", "Taze Sebzeler ve Yeşillikler"],
+            "Meyve ve Sebze": ["Taze Meyveler", "Taze Sebzeler ve Yeşillikler"],
             "Temel Gıda": ["Bakliyat", "Un, Şeker, Tuz, Sıvı Yağlar", "Makarna, Şehriye, Hazır Çorbalar", "Salça, Soslar ve Konserve Ürünler", "Baharatlar"],
             "Süt ve Kahvaltılık": ["Süt, Yoğurt, Ayran", "Peynir Çeşitleri, Zeytin, Tereyağı", "Yumurta, Salam, Sosis, Sucuk"],
             "Et, Tavuk ve Balık": ["Kırmızı Et", "Tavuk Eti", "Balık & Deniz Ürünleri"],
@@ -289,12 +289,27 @@
             "Elektronik": ["Küçük Ev Aletleri", "Kablolar & Şarj Aletleri"],
             "Oyuncaklar": ["Eğitici & Akıl Oyunları", "Araba & Figür Oyuncaklar", "Bebek & Oyuncak Evler", "Kutu Oyunları & Yapboz"],
             "Kırtasiye": ["Okul ve Ofis Malzemeleri", "Defter ve Kağıt Ürünleri", "Kalem ve Boya Çeşitleri", "Çanta ve Matara"],
-            "Züccaciye dan Mutfak": ["Mutfak Gereçleri ve Tencere", "Tabak, Bardak ve Sofra", "Saklama Kapları", "Ev Dekorasyon ve Düzenleyiciler"]
+            "Züccaciye ve Mutfak": ["Mutfak Gereçleri ve Tencere", "Tabak, Bardak ve Sofra", "Saklama Kapları", "Ev Dekorasyon ve Düzenleyiciler"]
         };
 
         let products = [];
         let allProducts = [];
         let fetchedOrders = [];
+        let audioCtx = null;
+
+        // Tarayıcı Ses Kilidini Açma Fonksiyonu
+        function unlockAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Tıklama vb. etkileşimlerde ses iznini aktifleştir
+        window.addEventListener('click', unlockAudio, { once: true });
+        window.addEventListener('keydown', unlockAudio, { once: true });
 
         window.onload = () => {
             if (sessionStorage.getItem("adminAuth") === "true") {
@@ -349,16 +364,38 @@
             `;
         }
 
+        // GELİŞTİRİLMİŞ ÇİFT TONLU ZİL SESİ
         function playNotificationSound() {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                unlockAudio();
+                const now = audioCtx.currentTime;
+
+                // Birinci Zil Tonu (800Hz)
                 const osc1 = audioCtx.createOscillator();
                 const gain1 = audioCtx.createGain();
-                osc1.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                osc1.connect(gain1); gain1.connect(audioCtx.destination);
-                osc1.start(); osc1.stop(audioCtx.currentTime + 0.15);
-            } catch (e) {}
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(800, now);
+                gain1.gain.setValueAtTime(0.4, now);
+                gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc1.connect(gain1);
+                gain1.connect(audioCtx.destination);
+                osc1.start(now);
+                osc1.stop(now + 0.3);
+
+                // İkinci Zil Tonu (1060Hz - Bip Bip DİNG Ses Etkisi)
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1060, now + 0.2);
+                gain2.gain.setValueAtTime(0.5, now + 0.2);
+                gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.start(now + 0.2);
+                osc2.stop(now + 0.8);
+            } catch (e) {
+                console.warn("Ses oynatılamadı:", e);
+            }
         }
 
         function showNotification(title, message) {
@@ -367,13 +404,14 @@
             toast.className = "bg-green-600 text-white p-4 rounded-xl shadow-2xl flex items-center gap-3 border-2 border-white animate-bounce";
             toast.innerHTML = `<i class="fa-solid fa-bell text-2xl"></i><div><h4 class="font-bold text-sm">${title}</h4><p class="text-xs">${message}</p></div>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 6000);
+            setTimeout(() => toast.remove(), 7000);
         }
 
         function handleLogin(e) {
             e.preventDefault();
             if (document.getElementById("adminUser").value === "admin" && document.getElementById("adminPass").value === "107155") {
                 sessionStorage.setItem("adminAuth", "true");
+                unlockAudio();
                 showAdminPanel();
             } else {
                 alert("Kullanıcı adı veya şifre hatalı!");
@@ -395,6 +433,7 @@
             listenRealtimeOrders();
         }
 
+        // SUPABASE REALTIME CANLI SİPARİŞ DİNLEYİCİSİ
         function listenRealtimeOrders() {
             db.channel('realtime_orders_channel')
               .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, payload => {
@@ -428,7 +467,6 @@
             }
         }
 
-        // SİPARİŞLERİ GETİRME VE 12 SAATİ GEÇENLERİ SİLME
         async function fetchOrders() {
             const container = document.getElementById("ordersList");
             const { data, error } = await db.from('orders').select('*').order('id', { ascending: false });
@@ -441,14 +479,13 @@
             const now = new Date().getTime();
             const twelveHoursInMs = 12 * 60 * 60 * 1000;
 
-            // 12 saat geçen teslim edilmiş/iptal edilmiş siparişleri tespit edip veritabanından silme
             const activeOrders = [];
             for (let o of data) {
                 if ((o.status === 'Teslim Edildi' || o.status === 'İptal Edildi') && o.completed_at) {
                     const completedTime = new Date(o.completed_at).getTime();
                     if (now - completedTime > twelveHoursInMs) {
                         await db.from('orders').delete().eq('id', o.id);
-                        continue; // Ekrana ekleme
+                        continue;
                     }
                 }
                 activeOrders.push(o);
@@ -513,10 +550,8 @@
             }
         }
 
-        // SİPARİŞ DURUMUNU GÜNCELLEME
         async function updateOrderStatus(id, status) {
             let updateData = { status };
-            // Teslim Edildi veya İptal Edildi seçilirse 12 saatlik sayacı başlatmak için completed_at kaydedilir
             if (status === 'Teslim Edildi' || status === 'İptal Edildi') {
                 updateData.completed_at = new Date().toISOString();
             } else {
