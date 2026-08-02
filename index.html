@@ -12,7 +12,7 @@
 </head>
 <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
 
-    <!-- 🛑 YENİ TABELA BANNER ALANI (SİYAHSIZ, DOĞRUDAN KIRMIZI & BEYAZ DÜZEN) -->
+    <!-- TABELA BANNER ALANI -->
     <div class="bg-white border-b-2 border-red-600 shadow-md py-4 px-4 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <!-- Orta/Sağ Kısım: Hızlı İletişim & Güvence Rozetleri -->
+            <!-- Sağ Kısım: Hızlı İletişim & Güvence Rozetleri -->
             <div class="flex items-center gap-3 text-xs">
                 <div class="hidden sm:flex items-center gap-2 bg-red-50 text-red-700 px-4 py-2 rounded-lg border border-red-200 font-semibold">
                     <i class="fa-solid fa-store text-lg text-red-600"></i>
@@ -148,7 +148,7 @@
         </div>
     </main>
 
-    <!-- RESMİ YASAL FOOTER (KÜNYE) -->
+    <!-- FOOTER -->
     <footer class="bg-gray-800 text-gray-300 text-xs py-8 px-4 mt-auto border-t border-gray-700">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -189,12 +189,25 @@
             </div>
 
             <div class="border-t pt-4 mt-6">
-                <div class="flex justify-between text-lg font-bold mb-1">
-                    <span>Toplam Tutar:</span>
-                    <span id="cartTotal" class="text-green-600">0.00 TL</span>
+                <!-- TESLİMAT VE TOPLAM BİLGİ ALANI -->
+                <div class="space-y-2 mb-3 bg-gray-50 p-3 rounded-lg border">
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Ara Toplam:</span>
+                        <span id="cartSubtotal" class="font-semibold">0.00 TL</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Teslimat Ücreti:</span>
+                        <span id="shippingFeeText" class="font-semibold">100.00 TL</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold text-gray-800 border-t pt-2">
+                        <span>Genel Toplam:</span>
+                        <span id="cartTotal" class="text-green-600">0.00 TL</span>
+                    </div>
                 </div>
-                <div class="text-xs text-amber-600 font-semibold mb-4">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Minimum sipariş tutarı 500.00 TL'dir.
+
+                <!-- 1500 TL TESLİMAT BİLGİLENDİRME UYARISI -->
+                <div id="shippingNotice" class="text-xs font-semibold mb-4 p-2.5 rounded-lg border">
+                    <!-- JS Tarafından Dinamik Doldurulur -->
                 </div>
 
                 <div class="space-y-2 mb-4">
@@ -203,7 +216,6 @@
                     <textarea id="custAddress" placeholder="Teslimat Adresiniz *" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500" rows="2"></textarea>
                     <textarea id="orderNote" placeholder="Sipariş Notu (Örn: Zili çalmayın...)" class="w-full border p-2 rounded text-sm focus:outline-none focus:border-green-500 bg-amber-50/50 border-amber-200" rows="2"></textarea>
                     
-                    <!-- YASAL ONAY KUTULARI (ZORUNLU) -->
                     <div class="space-y-1.5 pt-2 text-xs text-gray-600">
                         <label class="flex items-start gap-2 cursor-pointer">
                             <input type="checkbox" id="chkKvkk" class="mt-0.5 rounded text-green-600 focus:ring-green-500">
@@ -300,7 +312,7 @@
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const categoryData = {
-            "Meyve dan Sebze": ["Taze Meyveler", "Taze Sebzeler ve Yeşillikler"],
+            "Meyve ve Sebze": ["Taze Meyveler", "Taze Sebzeler ve Yeşillikler"],
             "Temel Gıda": ["Bakliyat", "Un, Şeker, Tuz, Sıvı Yağlar", "Makarna, Şehriye, Hazır Çorbalar", "Salça, Soslar ve Konserve Ürünler", "Baharatlar"],
             "Süt ve Kahvaltılık": ["Süt, Yoğurt, Ayran", "Peynir Çeşitleri, Zeytin, Tereyağı", "Yumurta, Salam, Sosis, Sucuk"],
             "Et, Tavuk ve Balık": ["Kırmızı Et", "Tavuk Eti", "Balık & Deniz Ürünleri"],
@@ -573,7 +585,6 @@
             const container = document.getElementById("mainCategoryButtons");
             let html = `<button onclick="filterMainCategory('Tümü')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'Tümü' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-green-600 hover:text-white'} transition">Tümü</button>`;
             
-            // İNDİRİMLİ ÜRÜNLER KATEGORİSİ ("TÜMÜ"NDEN HEMEN SONRA)
             html += `<button onclick="filterMainCategory('İndirimli Ürünler')" class="px-4 py-2 rounded-full border text-sm font-semibold whitespace-nowrap ${activeMainCategory === 'İndirimli Ürünler' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-600 hover:text-white'} transition"><i class="fa-solid fa-percent mr-1"></i> İndirimli Ürünler</button>`;
 
             Object.keys(categoryData).forEach(cat => {
@@ -639,7 +650,6 @@
                 const img = p.image_url || 'https://via.placeholder.com/300?text=Urun+Resmi';
                 
                 const hasDiscount = p.discount_price !== null && p.discount_price !== undefined && p.discount_price > 0;
-                const activePrice = hasDiscount ? p.discount_price : p.price;
 
                 return `
                 <div class="bg-white rounded-lg shadow-sm border p-4 flex flex-col justify-between hover:shadow-md transition relative">
@@ -671,9 +681,9 @@
             const query = document.getElementById("searchInput").value.toLowerCase();
             if (activeMainCategory === 'İndirimli Ürünler') {
                 const discountedItems = allProducts.filter(p => p.discount_price !== null && p.discount_price !== undefined && p.discount_price > 0);
-                renderProducts(discountedItems.filter(p => p.name.toLowerCase().includes(query) || p.main_category.toLowerCase().includes(query)));
+                renderProducts(discountedItems.filter(p => p.name.toLowerCase().includes(query) || (p.main_category && p.main_category.toLowerCase().includes(query))));
             } else {
-                renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query) || p.main_category.toLowerCase().includes(query)));
+                renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query) || (p.main_category && p.main_category.toLowerCase().includes(query))));
             }
         }
 
@@ -711,12 +721,24 @@
             document.getElementById("cartCount").innerText = cart.reduce((sum, item) => sum + item.qty, 0);
             const container = document.getElementById("cartItems");
             const orderBtn = document.getElementById("orderBtn");
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            let shippingFee = 0;
+            const shippingFeeText = document.getElementById("shippingFeeText");
+            const shippingNotice = document.getElementById("shippingNotice");
 
             if(cart.length === 0) {
                 container.innerHTML = `<p class="text-center text-gray-500 py-6">Sepetiniz boş.</p>`;
                 orderBtn.disabled = true;
                 orderBtn.className = "w-full bg-gray-300 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed transition flex items-center justify-center gap-2";
+                
+                document.getElementById("cartSubtotal").innerText = "0.00 TL";
+                document.getElementById("cartTotal").innerText = "0.00 TL";
+                shippingFeeText.innerHTML = "100.00 TL";
+                shippingFeeText.className = "font-semibold";
+                
+                shippingNotice.className = "text-xs font-semibold mb-4 p-2.5 rounded-lg border bg-blue-50 border-blue-200 text-blue-800";
+                shippingNotice.innerHTML = `<i class="fa-solid fa-truck-fast mr-1"></i> 1500.00 TL ve üzeri siparişlerinizde teslimat ücretsizdir!`;
             } else {
                 container.innerHTML = cart.map(item => `
                     <div class="flex justify-between items-center border-b pb-2">
@@ -733,15 +755,29 @@
                     </div>
                 `).join('');
 
-                if (total < 500) {
-                    orderBtn.disabled = true;
-                    orderBtn.className = "w-full bg-gray-300 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed transition flex items-center justify-center gap-2";
+                // 1500 TL HESAPLAMA MANTIĞI
+                if (subtotal >= 1500) {
+                    shippingFee = 0;
+                    shippingFeeText.innerHTML = `<span class="line-through text-gray-400 mr-1">100.00 TL</span> <span class="text-green-600 font-bold">ÜCRETSİZ</span>`;
+                    shippingNotice.className = "text-xs font-semibold mb-4 p-2.5 rounded-lg border bg-green-50 border-green-200 text-green-800 flex items-center gap-2";
+                    shippingNotice.innerHTML = `<i class="fa-solid fa-circle-check text-green-600 text-base"></i> Tebrikler! 1500 TL üzeri alışveriş yaptığınız için kargo ÜCRETSİZ!`;
                 } else {
-                    orderBtn.disabled = false;
-                    orderBtn.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2";
+                    shippingFee = 100;
+                    const remaining = 1500 - subtotal;
+                    shippingFeeText.innerText = "100.00 TL";
+                    shippingFeeText.className = "font-semibold text-amber-700";
+                    shippingNotice.className = "text-xs font-semibold mb-4 p-2.5 rounded-lg border bg-amber-50 border-amber-200 text-amber-800";
+                    shippingNotice.innerHTML = `<i class="fa-solid fa-truck-fast mr-1"></i> Sepetinize <strong>${remaining.toFixed(2)} TL</strong> daha ürün eklerseniz teslimat <strong>ÜCRETSİZ</strong> olacaktır!`;
                 }
+
+                const grandTotal = subtotal + shippingFee;
+
+                document.getElementById("cartSubtotal").innerText = `${subtotal.toFixed(2)} TL`;
+                document.getElementById("cartTotal").innerText = `${grandTotal.toFixed(2)} TL`;
+
+                orderBtn.disabled = false;
+                orderBtn.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2";
             }
-            document.getElementById("cartTotal").innerText = `${total.toFixed(2)} TL`;
         }
 
         function toggleCart() { document.getElementById("cartModal").classList.toggle("hidden"); }
@@ -749,11 +785,10 @@
         async function submitOrderDirect() {
             if(cart.length === 0) return showToast("Sepetiniz boş!", "warning");
             
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            if(total < 500) {
-                return showToast("Minimum sipariş tutarı 500 TL olmalıdır!", "error");
-            }
-            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const shippingFee = subtotal >= 1500 ? 0 : 100;
+            const grandTotal = subtotal + shippingFee;
+
             const name = document.getElementById("custName").value.trim();
             const phone = document.getElementById("custPhone").value.trim();
             const address = document.getElementById("custAddress").value.trim();
@@ -775,7 +810,8 @@
                 customer_address: address,
                 order_note: order_note,
                 items: cart,
-                total_amount: total,
+                total_amount: grandTotal,
+                shipping_fee: shippingFee,
                 status: 'Hazırlanıyor'
             }]);
 
